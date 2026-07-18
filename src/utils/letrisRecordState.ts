@@ -9,7 +9,6 @@ function storeKey(lang: SupportedLanguage): string {
 export interface LetrisRecord {
   score: number;
   wordsFound: number;
-  date: string;
 }
 
 export function getRecord(lang: SupportedLanguage): LetrisRecord | null {
@@ -21,11 +20,19 @@ export function getRecord(lang: SupportedLanguage): LetrisRecord | null {
   }
 }
 
-export function maybeSaveRecord(lang: SupportedLanguage, score: number, wordsFound: number): boolean {
-  const current = getRecord(lang);
-  if (current && current.score >= score) return false;
-
-  const isoDate = new Date().toISOString().slice(0, 10);
-  localStorage.setItem(storeKey(lang), JSON.stringify({ score, wordsFound, date: isoDate }));
-  return true;
+// Suma el resultado de una partida terminada al récord acumulado de
+// puntos y palabras encontradas de todos los tiempos (no es el mejor
+// puntaje de una sola partida, es la suma histórica de todas).
+export function addToRecord(
+  lang: SupportedLanguage,
+  scoreEarned: number,
+  wordsFoundThisGame: number
+): LetrisRecord {
+  const current = getRecord(lang) ?? { score: 0, wordsFound: 0 };
+  const updated: LetrisRecord = {
+    score: current.score + scoreEarned,
+    wordsFound: current.wordsFound + wordsFoundThisGame,
+  };
+  localStorage.setItem(storeKey(lang), JSON.stringify(updated));
+  return updated;
 }

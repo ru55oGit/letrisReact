@@ -26,7 +26,7 @@ import {
 } from "../utils/letrisEngine";
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
 import { collapseColumns } from "../utils/letrisEngine";
-import { maybeSaveRecord } from "../utils/letrisRecordState";
+import { addToRecord } from "../utils/letrisRecordState";
 
 const ACCENT = "#e74c3c";
 const FEEDBACK_DURATION_MS = 1300;
@@ -59,7 +59,6 @@ export default function Game() {
   const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
   const [flash, setFlash] = useState<{ cells: GridCell[]; kind: "success" | "error" } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
-  const [isNewRecord, setIsNewRecord] = useState(false);
 
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -89,12 +88,11 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [gameState.phase, level, currentLanguage]);
 
-  // Guardar récord al terminar.
+  // Sumar el resultado de esta partida al récord acumulado al terminar.
   useEffect(() => {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
-      const isRecord = maybeSaveRecord(currentLanguage, score, foundWords.length);
-      setIsNewRecord(isRecord);
+      addToRecord(currentLanguage, score, foundWords.length);
     }
   }, [gameState.phase, currentLanguage, score, foundWords.length]);
 
@@ -166,7 +164,6 @@ export default function Game() {
     if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
     if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
     savedRecordRef.current = false;
-    setIsNewRecord(false);
     setScore(0);
     setFoundWords([]);
     setUsedWords(new Set());
@@ -185,11 +182,6 @@ export default function Game() {
               {t.gameOverTitle}
             </Typography>
             <Typography sx={{ color: "#666", fontSize: 16 }}>{t.gameOverBody(score)}</Typography>
-            {isNewRecord && (
-              <Box sx={{ px: 2, py: 0.5, borderRadius: 999, backgroundColor: `${ACCENT}18`, border: `1px solid ${ACCENT}` }}>
-                <Typography sx={{ color: ACCENT, fontWeight: 800, fontSize: 13 }}>{t.newRecordBadge}</Typography>
-              </Box>
-            )}
           </Box>
           <Button onClick={restartGame} variant="contained" size="large" sx={{
             backgroundColor: "#fff", color: ACCENT, fontWeight: 800, fontSize: 18,

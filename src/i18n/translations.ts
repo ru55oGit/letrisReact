@@ -30,7 +30,6 @@ export interface Translation {
   errorAlreadyUsed: (word: string) => string;
   gameOverTitle: string;
   gameOverBody: (score: number) => string;
-  newRecordBadge: string;
   playAgainButton: string;
   backToHomeButton: string;
 }
@@ -62,7 +61,6 @@ const es: Translation = {
   errorAlreadyUsed: (word) => `Ya usaste "${word}" (-1 punto).`,
   gameOverTitle: "¡Se llenó la grilla!",
   gameOverBody: (score) => `Terminaste con ${score} puntos.`,
-  newRecordBadge: "¡Nuevo récord!",
   playAgainButton: "Jugar de nuevo",
   backToHomeButton: "Volver al inicio",
 };
@@ -94,7 +92,6 @@ const en: Translation = {
   errorAlreadyUsed: (word) => `You already used "${word}" (-1 point).`,
   gameOverTitle: "The grid filled up!",
   gameOverBody: (score) => `You finished with ${score} points.`,
-  newRecordBadge: "New record!",
   playAgainButton: "Play again",
   backToHomeButton: "Back to home",
 };
@@ -126,7 +123,6 @@ const pt: Translation = {
   errorAlreadyUsed: (word) => `Você já usou "${word}" (-1 ponto).`,
   gameOverTitle: "A grade encheu!",
   gameOverBody: (score) => `Você terminou com ${score} pontos.`,
-  newRecordBadge: "Novo recorde!",
   playAgainButton: "Jogar de novo",
   backToHomeButton: "Voltar ao início",
 };
