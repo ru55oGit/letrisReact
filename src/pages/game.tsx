@@ -235,8 +235,6 @@ export default function Game() {
           />
         </Box>
 
-        <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
-
         <Box sx={{ display: "flex", width: "100%", gap: "2px", height: 24 }}>
           <Button onClick={() => handleMove(-1)} sx={controlButtonSx}>
             <ArrowBackIosNewRoundedIcon sx={{ fontSize: 14 }} />
@@ -254,6 +252,8 @@ export default function Game() {
             <ArrowForwardIosRoundedIcon sx={{ fontSize: 14 }} />
           </Button>
         </Box>
+
+        <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
       </Box>
     </Layout>
   );

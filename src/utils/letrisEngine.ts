@@ -85,7 +85,7 @@ export function levelFromWordsFound(wordsFound: number): number {
 }
 
 export function gravityIntervalMs(level: number): number {
-  return Math.max(150, 800 - (level - 1) * 60);
+  return Math.max(400, 1400 - (level - 1) * 50);
 }
 
 export interface LockResult {
