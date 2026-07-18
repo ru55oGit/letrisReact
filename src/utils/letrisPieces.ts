@@ -90,3 +90,40 @@ export function rotateMatrixCCW<T>(matrix: T[][]): T[][] {
   }
   return result;
 }
+
+// La pieza O ocupa un 2x2 que no está centrado en la caja 4x4, así que
+// rotar la matriz entera (como con las demás piezas) la desplazaría de
+// lugar. Visualmente un cuadrado rotado se ve igual, pero acá cada celda
+// tiene una letra distinta, así que "rotarla" tiene sentido: permuta las
+// 4 letras entre sí sin mover la pieza (las 4 celdas ocupadas quedan
+// exactamente donde estaban).
+const O_TL: [number, number] = [0, 1];
+const O_TR: [number, number] = [0, 2];
+const O_BL: [number, number] = [1, 1];
+const O_BR: [number, number] = [1, 2];
+
+export function rotateOPieceLetters<T>(matrix: T[][], dir: "cw" | "ccw"): T[][] {
+  const result = matrix.map((row) => [...row]);
+  const [tlR, tlC] = O_TL;
+  const [trR, trC] = O_TR;
+  const [blR, blC] = O_BL;
+  const [brR, brC] = O_BR;
+  const tl = matrix[tlR][tlC];
+  const tr = matrix[trR][trC];
+  const bl = matrix[blR][blC];
+  const br = matrix[brR][brC];
+
+  if (dir === "cw") {
+    result[trR][trC] = tl;
+    result[brR][brC] = tr;
+    result[blR][blC] = br;
+    result[tlR][tlC] = bl;
+  } else {
+    result[tlR][tlC] = tr;
+    result[trR][trC] = br;
+    result[brR][brC] = bl;
+    result[blR][blC] = tl;
+  }
+
+  return result;
+}

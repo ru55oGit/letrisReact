@@ -5,6 +5,7 @@ import {
   getSpawnShape,
   rotateMatrixCW,
   rotateMatrixCCW,
+  rotateOPieceLetters,
 } from "./letrisPieces";
 import { randomWeightedLetter } from "./letrisLetters";
 
@@ -65,7 +66,11 @@ export function tryMove(board: Board, piece: FallingPiece, dRow: number, dCol: n
 }
 
 export function tryRotate(board: Board, piece: FallingPiece, dir: "cw" | "ccw"): FallingPiece | null {
-  if (piece.type === "O") return piece; // simétrica: rotar no cambia nada visualmente
+  if (piece.type === "O") {
+    // La forma no cambia (sigue siendo un cuadrado), pero las 4 letras
+    // rotan entre sí — acá sí sirve, a diferencia del Tetris clásico.
+    return { ...piece, matrix: rotateOPieceLetters(piece.matrix, dir) };
+  }
 
   const rotated = dir === "cw" ? rotateMatrixCW(piece.matrix) : rotateMatrixCCW(piece.matrix);
 
@@ -85,7 +90,7 @@ export function levelFromWordsFound(wordsFound: number): number {
 }
 
 export function gravityIntervalMs(level: number): number {
-  return Math.max(400, 1700 - (level - 1) * 50);
+  return Math.max(450, 2000 - (level - 1) * 50);
 }
 
 export interface LockResult {
