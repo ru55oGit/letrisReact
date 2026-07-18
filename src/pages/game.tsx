@@ -92,7 +92,7 @@ export default function Game() {
   useEffect(() => {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
-      addToRecord(currentLanguage, score, foundWords.length);
+      addToRecord(currentLanguage, score, foundWords.map((f) => f.word));
     }
   }, [gameState.phase, currentLanguage, score, foundWords.length]);
 

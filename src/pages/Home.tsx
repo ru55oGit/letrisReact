@@ -87,9 +87,23 @@ export default function Home() {
               <Typography sx={{ fontSize: 42, fontWeight: 900, color: ACCENT, fontFamily: "monospace" }}>
                 {record.score}
               </Typography>
-              <Typography sx={{ fontSize: 13, color: "#888" }}>
+              <Typography sx={{ fontSize: 13, color: "#888", mb: record.words.length > 0 ? 1.5 : 0 }}>
                 {t.recordBody(record.score, record.wordsFound)}
               </Typography>
+              {record.words.length > 0 && (
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+                  {record.words.map((word, i) => (
+                    <Box key={i} sx={{
+                      px: 1.5, py: 0.5, borderRadius: "6px",
+                      backgroundColor: `${ACCENT}18`, border: `1px solid ${ACCENT}55`,
+                    }}>
+                      <Typography sx={{ color: ACCENT, fontFamily: "monospace", fontSize: 13, fontWeight: 700 }}>
+                        {word}
+                      </Typography>
+                    </Box>
+                  ))}
+                </Box>
+              )}
             </>
           ) : (
             <Typography sx={{ fontSize: 13, color: "#888" }}>{t.recordEmptyBody}</Typography>
