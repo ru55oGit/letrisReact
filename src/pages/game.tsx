@@ -201,15 +201,6 @@ export default function Game() {
   return (
     <Layout onBack={() => navigate("/")}>
       <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
-          <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 13, textTransform: "uppercase", opacity: 0.8 }}>
-            {t.scoreLabel}
-          </Typography>
-          <Typography sx={{ color: "#fff", fontWeight: 900, fontSize: 20, fontFamily: "monospace" }}>
-            {score}
-          </Typography>
-        </Box>
-
         <Box sx={{ minHeight: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {errorMsg && (
             <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.25)", px: 1.5, py: 0.25, borderRadius: 999, fontSize: 12, fontWeight: 700, textAlign: "center" }}>
@@ -245,7 +236,13 @@ export default function Game() {
           </Button>
         </Box>
 
-        <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
+        <FoundWordsList
+          title={t.wordsListTitle}
+          emptyLabel={t.wordsListEmpty}
+          words={foundWords}
+          scoreLabel={t.scoreLabel}
+          score={score}
+        />
       </Box>
     </Layout>
   );
