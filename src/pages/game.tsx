@@ -26,7 +26,7 @@ import {
 } from "../utils/letrisEngine";
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
 import { collapseColumns } from "../utils/letrisEngine";
-import { addToRecord } from "../utils/letrisRecordState";
+import { maybeSaveRecord } from "../utils/letrisRecordState";
 
 const ACCENT = "#e74c3c";
 const FEEDBACK_DURATION_MS = 1300;
@@ -88,11 +88,11 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [gameState.phase, level, currentLanguage]);
 
-  // Sumar el resultado de esta partida al récord acumulado al terminar.
+  // Guardar récord al terminar, solo si esta partida lo supera.
   useEffect(() => {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
-      addToRecord(currentLanguage, score, foundWords.map((f) => f.word));
+      maybeSaveRecord(currentLanguage, score, foundWords.map((f) => f.word));
     }
   }, [gameState.phase, currentLanguage, score, foundWords.length]);
 
