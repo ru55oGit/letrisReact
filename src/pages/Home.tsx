@@ -6,6 +6,7 @@ import Button from "@mui/material/Button";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import Layout from "../components/Layout";
 import LanguageSelector from "../components/LanguageSelector";
+import HowToPlayDemo from "../components/HowToPlayDemo";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getRecord, LetrisRecord } from "../utils/letrisRecordState";
 
@@ -50,28 +51,13 @@ export default function Home() {
         <Typography sx={{ color: "#ffe6e6", fontSize: 18, fontWeight: 600 }}>{greeting}</Typography>
         <Typography sx={{ color: "#fff", fontSize: 24, fontWeight: 700, lineHeight: 1.4 }}>{t.readyToPlay}</Typography>
 
-        {/* Récord */}
+        {/* Card de juego: demo animada + botón Jugar */}
         <Box sx={{ width: "100%", borderRadius: "24px", backgroundColor: CARD_BG, p: 2, boxShadow: "0 12px 24px rgba(0,0,0,0.18)" }}>
           <Box sx={{
             width: "100%", borderRadius: "16px", backgroundColor: "#f3f3f3",
-            p: 3, mb: 2, display: "flex", flexDirection: "column",
-            alignItems: "center", justifyContent: "center", gap: 1, minHeight: 120,
+            p: 1.5, mb: 2,
           }}>
-            <Typography sx={{ fontSize: 13, color: "#888", fontWeight: 700, textTransform: "uppercase" }}>
-              {t.recordTitle}
-            </Typography>
-            {record ? (
-              <>
-                <Typography sx={{ fontSize: 42, fontWeight: 900, color: ACCENT, fontFamily: "monospace" }}>
-                  {record.score}
-                </Typography>
-                <Typography sx={{ fontSize: 13, color: "#999", textAlign: "center" }}>
-                  {t.recordBody(record.score, record.wordsFound)}
-                </Typography>
-              </>
-            ) : (
-              <Typography sx={{ fontSize: 14, color: "#999", textAlign: "center" }}>{t.recordEmptyBody}</Typography>
-            )}
+            <HowToPlayDemo />
           </Box>
 
           <Box sx={{ display: "flex", justifyContent: "center" }}>
@@ -89,6 +75,25 @@ export default function Home() {
               {t.playButton}
             </Button>
           </Box>
+        </Box>
+
+        {/* Récord — box separado, como "Mejor Racha" en Enganchalo */}
+        <Box sx={{ borderRadius: "16px", backgroundColor: "#fff", p: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <Typography sx={{ fontSize: 28, fontWeight: 800, color: "#222", mb: 0.5 }}>
+            {t.recordTitle}
+          </Typography>
+          {record ? (
+            <>
+              <Typography sx={{ fontSize: 42, fontWeight: 900, color: ACCENT, fontFamily: "monospace" }}>
+                {record.score}
+              </Typography>
+              <Typography sx={{ fontSize: 13, color: "#888" }}>
+                {t.recordBody(record.score, record.wordsFound)}
+              </Typography>
+            </>
+          ) : (
+            <Typography sx={{ fontSize: 13, color: "#888" }}>{t.recordEmptyBody}</Typography>
+          )}
         </Box>
 
         <Box component="section" sx={{ backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "24px", px: 2, py: 2.5 }}>

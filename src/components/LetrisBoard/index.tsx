@@ -3,6 +3,15 @@ import Box from "@mui/material/Box";
 import { Board, FallingPiece, BOARD_WIDTH, BOARD_HEIGHT } from "../../utils/letrisEngine";
 import { getLineCells, GridCell } from "../../utils/letrisWords";
 import { PIECE_COLORS } from "../../utils/letrisPieces";
+import {
+  CELL_SELECTED_BG,
+  CELL_SELECTED_TEXT,
+  CELL_SUCCESS_BG,
+  CELL_ERROR_BG,
+  CELL_LOCKED_BG,
+  CELL_EMPTY_BG,
+  CELL_EMPTY_TEXT,
+} from "../../utils/letrisColors";
 
 interface LetrisBoardProps {
   board: Board;
@@ -94,22 +103,22 @@ export default function LetrisBoard({ board, fallingPiece, onSelectionEnd, flash
           const isFlashError = flashKeys.has(key) && flashCells?.kind === "error";
           const displayLetter = letter ?? fallingLetter ?? "";
 
-          let backgroundColor = "#f3f3f3";
-          let color = "#333";
+          let backgroundColor: string = CELL_EMPTY_BG;
+          let color: string = CELL_EMPTY_TEXT;
           if (isFlashSuccess) {
-            backgroundColor = "#22c55e";
+            backgroundColor = CELL_SUCCESS_BG;
             color = "#fff";
           } else if (isFlashError) {
-            backgroundColor = "#ef4444";
+            backgroundColor = CELL_ERROR_BG;
             color = "#fff";
           } else if (isSelected) {
-            backgroundColor = "#e74c3c55";
-            color = "#e74c3c";
+            backgroundColor = CELL_SELECTED_BG;
+            color = CELL_SELECTED_TEXT;
           } else if (isFalling && fallingPiece) {
             backgroundColor = PIECE_COLORS[fallingPiece.type];
             color = "#fff";
           } else if (letter) {
-            backgroundColor = "#fff";
+            backgroundColor = CELL_LOCKED_BG;
           }
 
           return (
