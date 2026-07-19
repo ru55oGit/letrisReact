@@ -152,7 +152,7 @@ export default function LetrisBoard({ board, fallingPiece, onSelectionEnd, flash
                 justifyContent: "center",
                 borderRadius: "3px",
                 fontWeight: 800,
-                fontSize: { xs: 11, sm: 13 },
+                fontSize: { xs: 14, sm: 16 },
                 fontFamily: "monospace",
                 backgroundColor,
                 color,

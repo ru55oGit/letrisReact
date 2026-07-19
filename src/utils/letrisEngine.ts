@@ -9,8 +9,8 @@ import {
 } from "./letrisPieces";
 import { randomWeightedLetter } from "./letrisLetters";
 
-export const BOARD_WIDTH = 10;
-export const BOARD_HEIGHT = 16;
+export const BOARD_WIDTH = 9;
+export const BOARD_HEIGHT = 15;
 const PIECE_MATRIX_SIZE = 4;
 const WALL_KICK_OFFSETS = [0, -1, 1, -2, 2];
 
