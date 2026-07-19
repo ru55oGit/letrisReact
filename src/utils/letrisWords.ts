@@ -7,24 +7,15 @@ export interface GridCell {
   col: number;
 }
 
-// Devuelve las celdas entre start y end SOLO si forman una línea recta
-// (horizontal, vertical o diagonal a 45°); si no, null (selección inválida).
-export function getLineCells(start: GridCell, end: GridCell): GridCell[] | null {
-  const dRow = end.row - start.row;
-  const dCol = end.col - start.col;
-
-  if (dRow === 0 && dCol === 0) return [{ row: start.row, col: start.col }];
-  if (dRow !== 0 && dCol !== 0 && Math.abs(dRow) !== Math.abs(dCol)) return null;
-
-  const steps = Math.max(Math.abs(dRow), Math.abs(dCol));
-  const stepRow = Math.sign(dRow);
-  const stepCol = Math.sign(dCol);
-
-  const cells: GridCell[] = [];
-  for (let i = 0; i <= steps; i++) {
-    cells.push({ row: start.row + stepRow * i, col: start.col + stepCol * i });
-  }
-  return cells;
+// Las piezas de Tetris casi nunca dejan sus 4 letras en línea recta (solo
+// la pieza I lo hace); T/S/Z/J/L quedan en clusters con forma de codo. Por
+// eso la selección es "camino de celdas vecinas" al estilo Boggle, no
+// línea recta: cada paso solo tiene que tocar (en las 8 direcciones) a la
+// celda anterior del camino.
+export function areAdjacent(a: GridCell, b: GridCell): boolean {
+  const dRow = Math.abs(a.row - b.row);
+  const dCol = Math.abs(a.col - b.col);
+  return dRow <= 1 && dCol <= 1 && !(dRow === 0 && dCol === 0);
 }
 
 function extractWord(board: Board, cells: GridCell[]): string | null {

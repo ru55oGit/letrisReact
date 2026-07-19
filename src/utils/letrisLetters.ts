@@ -24,21 +24,35 @@ const LETTER_WEIGHTS: Record<SupportedLanguage, Record<string, number>> = {
   },
 };
 
-function buildWeightedPool(weights: Record<string, number>): string[] {
-  const pool: string[] = [];
-  for (const [letter, weight] of Object.entries(weights)) {
-    for (let i = 0; i < weight; i++) pool.push(letter);
+function shuffle<T>(arr: T[]): T[] {
+  const copy = [...arr];
+  for (let i = copy.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [copy[i], copy[j]] = [copy[j], copy[i]];
   }
-  return pool;
+  return copy;
 }
 
-const POOLS: Record<SupportedLanguage, string[]> = {
-  es: buildWeightedPool(LETTER_WEIGHTS.es),
-  en: buildWeightedPool(LETTER_WEIGHTS.en),
-  pt: buildWeightedPool(LETTER_WEIGHTS.pt),
-};
+function buildFreshBag(lang: SupportedLanguage): string[] {
+  const bag: string[] = [];
+  for (const [letter, weight] of Object.entries(LETTER_WEIGHTS[lang])) {
+    for (let i = 0; i < weight; i++) bag.push(letter);
+  }
+  return shuffle(bag);
+}
+
+// Bolsa tipo Scrabble en vez de sorteo independiente por celda: cada
+// letra se va sacando de un pool que se agota, así ninguna queda
+// "hambreada" por mala suerte (con sorteo independiente podías, en
+// teoría, no ver una Q en toda la partida). Al vaciarse, se rearma y
+// reparte de nuevo.
+const bags: Partial<Record<SupportedLanguage, string[]>> = {};
 
 export function randomWeightedLetter(lang: SupportedLanguage): string {
-  const pool = POOLS[lang];
-  return pool[Math.floor(Math.random() * pool.length)];
+  let bag = bags[lang];
+  if (!bag || bag.length === 0) {
+    bag = buildFreshBag(lang);
+    bags[lang] = bag;
+  }
+  return bag.pop()!;
 }

@@ -52,7 +52,7 @@ const es: Translation = {
   whatIsTitle: "¿Qué es Letris?",
   whatIsBody: "Letris es un Tetris de letras. Cada pieza cae con una letra por cuadro, y al encastrar arriba de las demás va formando una sopa de letras. A diferencia del Tetris clásico, las líneas completas no se borran solas: tenés que encontrar palabras deslizando el dedo sobre la grilla para eliminarlas.",
   howToPlayTitle: "¿Cómo jugar?",
-  howToPlayBody: "Movés y girás las piezas con los botones de abajo para acomodar las letras. Cuando veas una palabra formada en la grilla, deslizá el dedo desde la primera letra hasta la última para seleccionarla. Si existe en el diccionario, se elimina y sumás puntos; las letras de arriba caen para ocupar su lugar. Repetir una palabra ya usada te resta 1 punto. Perdés si las piezas llegan arriba de todo.",
+  howToPlayBody: "Movés y girás las piezas con los botones de abajo para acomodar las letras. Cuando veas una palabra formada en la grilla, deslizá el dedo pasando por sus letras: no hace falta que estén en línea recta, podés doblar en cualquier dirección mientras cada letra toque a la anterior. Si existe en el diccionario, se elimina y sumás puntos; las letras de arriba caen para ocupar su lugar. Repetir una palabra ya usada te resta 1 punto. Perdés si las piezas llegan arriba de todo.",
 
   scoreLabel: "Puntos",
   wordsListTitle: "Palabras encontradas",
@@ -83,7 +83,7 @@ const en: Translation = {
   whatIsTitle: "What is Letris?",
   whatIsBody: "Letris is a letter Tetris. Each piece falls with one letter per block, and as pieces stack up they form a word search grid. Unlike classic Tetris, full lines don't clear on their own: you have to find words by swiping across the grid to remove them.",
   howToPlayTitle: "How to play?",
-  howToPlayBody: "Move and rotate pieces with the buttons below to arrange the letters. When you spot a word in the grid, swipe from its first letter to its last to select it. If it's in the dictionary, it's removed and you score points; the letters above fall down to fill the gap. Repeating an already-used word costs you 1 point. You lose when the pieces stack up to the top.",
+  howToPlayBody: "Move and rotate pieces with the buttons below to arrange the letters. When you spot a word in the grid, swipe across its letters: they don't need to be in a straight line, you can turn in any direction as long as each letter touches the previous one. If it's in the dictionary, it's removed and you score points; the letters above fall down to fill the gap. Repeating an already-used word costs you 1 point. You lose when the pieces stack up to the top.",
 
   scoreLabel: "Score",
   wordsListTitle: "Words found",
@@ -114,7 +114,7 @@ const pt: Translation = {
   whatIsTitle: "O que é o Letris?",
   whatIsBody: "Letris é um Tetris de letras. Cada peça cai com uma letra por quadrado, e ao se encaixar sobre as outras vai formando um caça-palavras. Diferente do Tetris clássico, as linhas completas não somem sozinhas: você precisa encontrar palavras deslizando o dedo pela grade para eliminá-las.",
   howToPlayTitle: "Como jogar?",
-  howToPlayBody: "Mova e gire as peças com os botões abaixo para organizar as letras. Quando ver uma palavra formada na grade, deslize da primeira letra até a última para selecioná-la. Se existir no dicionário, ela é removida e você ganha pontos; as letras de cima caem para ocupar o lugar. Repetir uma palavra já usada tira 1 ponto. Você perde quando as peças chegam até o topo.",
+  howToPlayBody: "Mova e gire as peças com os botões abaixo para organizar as letras. Quando ver uma palavra formada na grade, deslize passando pelas letras: elas não precisam estar em linha reta, você pode virar em qualquer direção contanto que cada letra toque a anterior. Se existir no dicionário, ela é removida e você ganha pontos; as letras de cima caem para ocupar o lugar. Repetir uma palavra já usada tira 1 ponto. Você perde quando as peças chegam até o topo.",
 
   scoreLabel: "Pontos",
   wordsListTitle: "Palavras encontradas",

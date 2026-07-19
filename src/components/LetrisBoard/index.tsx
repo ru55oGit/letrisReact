@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { Board, FallingPiece, BOARD_WIDTH, BOARD_HEIGHT } from "../../utils/letrisEngine";
-import { getLineCells, GridCell } from "../../utils/letrisWords";
+import { areAdjacent, GridCell } from "../../utils/letrisWords";
 import { PIECE_COLORS } from "../../utils/letrisPieces";
 import {
   CELL_SELECTED_BG,
@@ -66,8 +66,27 @@ export default function LetrisBoard({ board, fallingPiece, onSelectionEnd, flash
     if (!startRef.current) return;
     const current = cellFromPoint(e.clientX, e.clientY);
     if (!current) return;
-    const line = getLineCells(startRef.current, current);
-    if (line) setSelection(line);
+    if (board[current.row][current.col] === null) return; // solo se puede pasar por letras encastradas
+
+    setSelection((prev) => {
+      if (prev.length === 0) return prev;
+      const last = prev[prev.length - 1];
+      if (last.row === current.row && last.col === current.col) return prev;
+
+      // Si el dedo vuelve a la celda anterior del camino, deshace el último paso.
+      if (prev.length >= 2) {
+        const secondLast = prev[prev.length - 2];
+        if (secondLast.row === current.row && secondLast.col === current.col) {
+          return prev.slice(0, -1);
+        }
+      }
+
+      const alreadyInPath = prev.some((c) => c.row === current.row && c.col === current.col);
+      if (alreadyInPath) return prev;
+      if (!areAdjacent(last, current)) return prev;
+
+      return [...prev, current];
+    });
   }
 
   function handlePointerUp() {
