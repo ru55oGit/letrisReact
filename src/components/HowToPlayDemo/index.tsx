@@ -14,36 +14,64 @@ import {
   CELL_EMPTY_TEXT,
 } from "../../utils/letrisColors";
 
+interface Cell {
+  row: number;
+  col: number;
+}
+
 const DEMO_COLS = 8;
 const DEMO_ROWS = 7;
 const WORD_ROW = 4;
 const WORD_START_COL = 2;
-const PIECE_LANDED_ROW = 2; // fila (top-left de la matriz 4x4) donde queda apoyada la pieza, justo arriba de la palabra
+const PIECE_LANDED_ROW = 2; // fila (top-left de la matriz 4x4) donde queda apoyada la pieza, justo arriba de la palabra recta
 
 const DEMO_WORDS: Record<SupportedLanguage, string> = { es: "CASA", en: "PLAY", pt: "JOGO" };
+const DEMO_WORD_LENGTH = 4; // las 3 palabras de arriba miden lo mismo
+
+// Camino doblado (no en línea recta) para la segunda demostración: baja,
+// dobla a la izquierda, vuelve a bajar — cada paso toca al anterior, como
+// exige la selección real, pero nunca forma una línea recta.
+function bentPathCells(): Cell[] {
+  return [
+    { row: WORD_ROW, col: DEMO_COLS - 1 },
+    { row: WORD_ROW + 1, col: DEMO_COLS - 1 },
+    { row: WORD_ROW + 1, col: DEMO_COLS - 2 },
+    { row: WORD_ROW + 2, col: DEMO_COLS - 2 },
+  ];
+}
+
+function straightPathCells(): Cell[] {
+  return Array.from({ length: DEMO_WORD_LENGTH }, (_, i) => ({ row: WORD_ROW, col: WORD_START_COL + i }));
+}
 
 const FALL_STEP_MS = 350;
 const LANDED_PAUSE_MS = 500;
 const SELECT_STEP_MS = 150;
 const FOUND_FLASH_MS = 450;
-const COLLAPSE_PAUSE_MS = 900;
+const COLLAPSE_PAUSE_MS = 700;
+const BETWEEN_ROUNDS_PAUSE_MS = 500;
 const RESET_PAUSE_MS = 900;
 
 function cellKey(row: number, col: number): string {
   return `${row}-${col}`;
 }
 
+function placeWord(board: BoardCell[][], word: string, cells: Cell[]): void {
+  cells.forEach((cell, i) => {
+    board[cell.row][cell.col] = word[i];
+  });
+}
+
 function buildInitialBoard(lang: SupportedLanguage): BoardCell[][] {
   const board: BoardCell[][] = Array.from({ length: DEMO_ROWS }, () => Array<BoardCell>(DEMO_COLS).fill(null));
   const word = DEMO_WORDS[lang];
 
-  for (let i = 0; i < word.length; i++) {
-    board[WORD_ROW][WORD_START_COL + i] = word[i];
-  }
+  placeWord(board, word, straightPathCells());
+  placeWord(board, word, bentPathCells());
 
   for (const row of [WORD_ROW, WORD_ROW + 1, WORD_ROW + 2]) {
     for (let col = 0; col < DEMO_COLS; col++) {
-      if (board[row][col] !== null) continue; // no pisar la palabra ya colocada
+      if (board[row][col] !== null) continue; // no pisar las palabras ya colocadas
       if (Math.random() < 0.55) board[row][col] = randomWeightedLetter(lang);
     }
   }
@@ -77,6 +105,7 @@ export default function HowToPlayDemo() {
   const { currentLanguage } = useLanguage();
   const [board, setBoard] = useState<BoardCell[][]>(() => buildInitialBoard(currentLanguage));
   const [piece, setPiece] = useState<FallingPiece | null>(() => spawnDemoPiece(currentLanguage, -1));
+  const [selectionPath, setSelectionPath] = useState<Cell[]>([]);
   const [selectedCount, setSelectedCount] = useState(0);
   const [flashSuccess, setFlashSuccess] = useState(false);
 
@@ -88,20 +117,48 @@ export default function HowToPlayDemo() {
       timeoutsRef.current.push(id);
     }
 
+    // Anima la selección progresiva de `cells` (en el orden del camino,
+    // recto o doblado, da igual), flashea en verde y limpia+colapsa.
+    // Devuelve cuánto delay total consumió.
+    function scheduleSelectionRound(cells: Cell[], startDelay: number): number {
+      let delay = startDelay;
+
+      schedule(() => setSelectionPath(cells), delay);
+      for (let i = 1; i <= cells.length; i++) {
+        schedule(() => setSelectedCount(i), delay + SELECT_STEP_MS * i);
+      }
+      delay += SELECT_STEP_MS * cells.length;
+
+      schedule(() => setFlashSuccess(true), delay + 150);
+      delay += 150;
+
+      schedule(() => {
+        setFlashSuccess(false);
+        setSelectedCount(0);
+        setSelectionPath([]);
+        setBoard((prev) => {
+          const cleared = prev.map((r) => [...r]);
+          for (const { row, col } of cells) cleared[row][col] = null;
+          return collapseDemoColumns(cleared, new Set(cells.map((c) => c.col)));
+        });
+      }, delay + FOUND_FLASH_MS);
+      delay += FOUND_FLASH_MS;
+
+      return delay;
+    }
+
     function runCycle() {
       const lang = currentLanguage;
-      const word = DEMO_WORDS[lang];
-      const wordCols = Array.from({ length: word.length }, (_, i) => WORD_START_COL + i);
 
-      const initialBoard = buildInitialBoard(lang);
-      setBoard(initialBoard);
+      setBoard(buildInitialBoard(lang));
       setSelectedCount(0);
+      setSelectionPath([]);
       setFlashSuccess(false);
 
       let fallingPiece = spawnDemoPiece(lang, -1);
       setPiece(fallingPiece);
 
-      // Caída: -1 -> 0 -> 1 -> 2 (PIECE_LANDED_ROW)
+      // Caída: -1 -> 0 -> 1 -> 2 (PIECE_LANDED_ROW), justo arriba de la palabra recta.
       let delay = FALL_STEP_MS;
       for (let row = 0; row <= PIECE_LANDED_ROW; row++) {
         schedule(() => {
@@ -131,27 +188,13 @@ export default function HowToPlayDemo() {
       }, delay + LANDED_PAUSE_MS);
       delay += LANDED_PAUSE_MS;
 
-      // Selección progresiva de la palabra, celda por celda.
-      for (let i = 1; i <= word.length; i++) {
-        schedule(() => setSelectedCount(i), delay + SELECT_STEP_MS * i);
-      }
-      delay += SELECT_STEP_MS * word.length;
+      // Ronda 1: selección en línea recta (la pieza que acaba de caer
+      // encastra justo arriba, así se ve cómo colapsa después).
+      delay = scheduleSelectionRound(straightPathCells(), delay);
 
-      // Flash de éxito.
-      schedule(() => setFlashSuccess(true), delay + 150);
-      delay += 150;
-
-      // Colapso: se vacía la palabra y caen las columnas afectadas.
-      schedule(() => {
-        setFlashSuccess(false);
-        setSelectedCount(0);
-        setBoard((prev) => {
-          const cleared = prev.map((r) => [...r]);
-          for (const col of wordCols) cleared[WORD_ROW][col] = null;
-          return collapseDemoColumns(cleared, wordCols);
-        });
-      }, delay + FOUND_FLASH_MS);
-      delay += FOUND_FLASH_MS;
+      // Ronda 2: selección en camino doblado — misma mecánica, otra forma.
+      delay += BETWEEN_ROUNDS_PAUSE_MS;
+      delay = scheduleSelectionRound(bentPathCells(), delay);
 
       // Pausa final mostrando el resultado, después reinicia el ciclo.
       schedule(runCycle, delay + COLLAPSE_PAUSE_MS + RESET_PAUSE_MS);
@@ -181,7 +224,7 @@ export default function HowToPlayDemo() {
   }
 
   const selectedKeys = new Set(
-    Array.from({ length: selectedCount }, (_, i) => cellKey(WORD_ROW, WORD_START_COL + i))
+    selectionPath.slice(0, selectedCount).map((c) => cellKey(c.row, c.col))
   );
 
   return (
