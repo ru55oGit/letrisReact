@@ -15,7 +15,6 @@ import { useLanguage } from "../i18n/LanguageContext";
 import {
   Board,
   FallingPiece,
-  WORDS_PER_LEVEL,
   createEmptyBoard,
   spawnPiece,
   hasCollision,
@@ -23,6 +22,8 @@ import {
   tryRotate,
   lockPiece,
   levelFromWordsFound,
+  wordsIntoCurrentLevel,
+  wordsRequiredForLevel,
   gravityIntervalMs,
 } from "../utils/letrisEngine";
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
@@ -69,7 +70,8 @@ export default function Game() {
   const savedRecordRef = useRef(false);
 
   const level = levelFromWordsFound(foundWords.length);
-  const wordsInLevel = foundWords.length % WORDS_PER_LEVEL;
+  const wordsInLevel = wordsIntoCurrentLevel(foundWords.length);
+  const levelGoal = wordsRequiredForLevel(level);
 
   // Gravedad automática.
   useEffect(() => {
@@ -159,7 +161,7 @@ export default function Game() {
     setUsedWords((prev) => new Set(prev).add(result.word));
     setFlash({ cells, kind: "success" });
 
-    const willLevelUp = newTotalWords % WORDS_PER_LEVEL === 0;
+    const willLevelUp = wordsIntoCurrentLevel(newTotalWords) === 0;
     const newLevel = levelFromWordsFound(newTotalWords);
 
     if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
@@ -236,7 +238,7 @@ export default function Game() {
             {t.levelLabel} {level}
           </Typography>
           <Typography sx={{ color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: 13 }}>
-            {t.levelGoalLabel(wordsInLevel, WORDS_PER_LEVEL)}
+            {t.levelGoalLabel(wordsInLevel, levelGoal)}
           </Typography>
         </Box>
 

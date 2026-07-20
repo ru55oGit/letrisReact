@@ -83,13 +83,35 @@ export function tryRotate(board: Board, piece: FallingPiece, dir: "cw" | "ccw"):
   return null;
 }
 
-// Cada WORDS_PER_LEVEL palabras encontradas se completa un nivel: se
-// vacía la grilla, se muestra un cartel y sube la dificultad (caída más
-// rápida). Nivel 1 = 0..4 palabras, nivel 2 = 5..9, nivel 3 = 10..14, etc.
-export const WORDS_PER_LEVEL = 5;
+// El objetivo de cada nivel crece de a WORDS_PER_LEVEL_STEP palabras: el
+// nivel 1 pide 5, el nivel 2 pide 10 (dentro de ese nivel, no acumulado
+// desde el principio), el nivel 3 pide 15, etc. Al completar un nivel se
+// vacía la grilla, se muestra un cartel y sube la dificultad.
+export const WORDS_PER_LEVEL_STEP = 5;
+
+// Palabras necesarias PARA completar el nivel dado (no acumulado).
+export function wordsRequiredForLevel(level: number): number {
+  return level * WORDS_PER_LEVEL_STEP;
+}
+
+// Total acumulado de palabras encontradas necesario para haber
+// completado los niveles 1..level.
+function cumulativeWordsThroughLevel(level: number): number {
+  return (WORDS_PER_LEVEL_STEP * level * (level + 1)) / 2;
+}
 
 export function levelFromWordsFound(wordsFound: number): number {
-  return 1 + Math.floor(wordsFound / WORDS_PER_LEVEL);
+  let level = 1;
+  while (wordsFound >= cumulativeWordsThroughLevel(level)) level++;
+  return level;
+}
+
+// Cuántas palabras lleva encontradas dentro del nivel actual (0 justo
+// después de completar un nivel, hasta wordsRequiredForLevel(level) - 1).
+export function wordsIntoCurrentLevel(wordsFound: number): number {
+  const level = levelFromWordsFound(wordsFound);
+  const previousThreshold = level === 1 ? 0 : cumulativeWordsThroughLevel(level - 1);
+  return wordsFound - previousThreshold;
 }
 
 export function gravityIntervalMs(level: number): number {
