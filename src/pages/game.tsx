@@ -15,6 +15,7 @@ import { useLanguage } from "../i18n/LanguageContext";
 import {
   Board,
   FallingPiece,
+  WORDS_PER_LEVEL,
   createEmptyBoard,
   spawnPiece,
   hasCollision,
@@ -31,8 +32,9 @@ import { maybeSaveRecord } from "../utils/letrisRecordState";
 const ACCENT = "#e74c3c";
 const FEEDBACK_DURATION_MS = 1300;
 const CLEAR_DELAY_MS = 260;
+const LEVEL_UP_POPUP_MS = 1800;
 
-type Phase = "playing" | "gameover";
+type Phase = "playing" | "levelup" | "gameover";
 
 interface GameState {
   board: Board;
@@ -59,12 +61,15 @@ export default function Game() {
   const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
   const [flash, setFlash] = useState<{ cells: GridCell[]; kind: "success" | "error" } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [levelUpNumber, setLevelUpNumber] = useState<number | null>(null);
 
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const levelUpTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedRecordRef = useRef(false);
 
   const level = levelFromWordsFound(foundWords.length);
+  const wordsInLevel = foundWords.length % WORDS_PER_LEVEL;
 
   // Gravedad automática.
   useEffect(() => {
@@ -88,7 +93,7 @@ export default function Game() {
     return () => clearInterval(interval);
   }, [gameState.phase, level, currentLanguage]);
 
-  // Guardar récord al terminar, solo si esta partida lo supera.
+  // Guardar récord al terminar, solo si esta partida supera alguno.
   useEffect(() => {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
@@ -149,40 +154,50 @@ export default function Game() {
     }
 
     setScore((s) => s + result.points);
+    const newTotalWords = foundWords.length + 1;
     setFoundWords((prev) => [...prev, { word: result.word, points: result.points }]);
     setUsedWords((prev) => new Set(prev).add(result.word));
     setFlash({ cells, kind: "success" });
+
+    const willLevelUp = newTotalWords % WORDS_PER_LEVEL === 0;
+    const newLevel = levelFromWordsFound(newTotalWords);
 
     if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
     clearTimeoutRef.current = setTimeout(() => {
       setGameState((prev) => ({ ...prev, board: removeCellsAndCollapse(prev.board, cells) }));
       setFlash(null);
+
+      if (willLevelUp) {
+        setLevelUpNumber(newLevel);
+        setGameState((prev) => ({ ...prev, phase: "levelup" }));
+        if (levelUpTimeoutRef.current) clearTimeout(levelUpTimeoutRef.current);
+        levelUpTimeoutRef.current = setTimeout(() => {
+          setLevelUpNumber(null);
+          setGameState({ board: createEmptyBoard(), fallingPiece: spawnPiece(currentLanguage), phase: "playing" });
+        }, LEVEL_UP_POPUP_MS);
+      }
     }, CLEAR_DELAY_MS);
   }
 
   function restartGame() {
     if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
     if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
+    if (levelUpTimeoutRef.current) clearTimeout(levelUpTimeoutRef.current);
     savedRecordRef.current = false;
     setScore(0);
     setFoundWords([]);
     setUsedWords(new Set());
     setFlash(null);
     setErrorMsg("");
+    setLevelUpNumber(null);
     setGameState({ board: createEmptyBoard(), fallingPiece: spawnPiece(currentLanguage), phase: "playing" });
   }
 
   if (gameState.phase === "gameover") {
+    const levelReached = levelFromWordsFound(foundWords.length);
     return (
       <Layout onBack={() => navigate("/")}>
         <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          <Box sx={{ borderRadius: "16px", backgroundColor: "#f3f3f3", p: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
-            <Typography sx={{ fontSize: 52 }}>🧩</Typography>
-            <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 26, color: "#222", textAlign: "center" }}>
-              {t.gameOverTitle}
-            </Typography>
-            <Typography sx={{ color: "#666", fontSize: 16 }}>{t.gameOverBody(score)}</Typography>
-          </Box>
           <Button onClick={restartGame} variant="contained" size="large" sx={{
             backgroundColor: "#fff", color: ACCENT, fontWeight: 800, fontSize: 18,
             py: 1.6, borderRadius: 999, textTransform: "none",
@@ -193,6 +208,21 @@ export default function Game() {
           <Button onClick={() => navigate("/")} sx={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
             {t.backToHomeButton}
           </Button>
+
+          <Box sx={{ borderRadius: "16px", backgroundColor: "#f3f3f3", p: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+            <Typography sx={{ fontSize: 52 }}>🧩</Typography>
+            <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 26, color: "#222", textAlign: "center" }}>
+              {t.gameOverTitle}
+            </Typography>
+            <Typography sx={{ color: "#666", fontSize: 16 }}>{t.gameOverBody(score)}</Typography>
+          </Box>
+
+          <Box sx={{ borderRadius: "16px", backgroundColor: "#fff", p: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <Typography sx={{ fontSize: 18, fontWeight: 800, color: "#222", mb: 1 }}>
+              {t.levelReachedLabel(levelReached)}
+            </Typography>
+            <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
+          </Box>
         </Box>
       </Layout>
     );
@@ -201,6 +231,15 @@ export default function Game() {
   return (
     <Layout onBack={() => navigate("/")}>
       <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 0.5 }}>
+          <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>
+            {t.levelLabel} {level}
+          </Typography>
+          <Typography sx={{ color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: 13 }}>
+            {t.levelGoalLabel(wordsInLevel, WORDS_PER_LEVEL)}
+          </Typography>
+        </Box>
+
         <Box sx={{ minHeight: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {errorMsg && (
             <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.25)", px: 1.5, py: 0.25, borderRadius: 999, fontSize: 12, fontWeight: 700, textAlign: "center" }}>
@@ -209,30 +248,43 @@ export default function Game() {
           )}
         </Box>
 
-        <Box sx={{ borderRadius: "16px", overflow: "hidden", backgroundColor: "#fff", p: 1 }}>
+        <Box sx={{ position: "relative", borderRadius: "16px", overflow: "hidden", backgroundColor: "#fff", p: 1 }}>
           <LetrisBoard
             board={gameState.board}
             fallingPiece={gameState.fallingPiece}
             onSelectionEnd={handleSelectionEnd}
             flashCells={flash}
           />
+
+          {gameState.phase === "levelup" && levelUpNumber !== null && (
+            <Box sx={{
+              position: "absolute", inset: 0,
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 1,
+              backgroundColor: "rgba(255,255,255,0.96)", textAlign: "center", px: 2,
+            }}>
+              <Typography sx={{ fontSize: 44 }}>🎉</Typography>
+              <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 32, color: ACCENT }}>
+                {t.levelUpTitle(levelUpNumber)}
+              </Typography>
+            </Box>
+          )}
         </Box>
 
-        <Box sx={{ display: "flex", width: "100%", gap: "2px", height: 24 }}>
+        <Box sx={{ display: "flex", width: "100%", gap: "2px" }}>
           <Button onClick={() => handleMove(-1)} sx={controlButtonSx}>
-            <ArrowBackIosNewRoundedIcon sx={{ fontSize: 14 }} />
+            <ArrowBackIosNewRoundedIcon sx={{ fontSize: 24 }} />
           </Button>
           <Button onClick={() => handleRotate("ccw")} sx={controlButtonSx}>
-            <RotateLeftRoundedIcon sx={{ fontSize: 16 }} />
+            <RotateLeftRoundedIcon sx={{ fontSize: 28 }} />
           </Button>
           <Button onClick={handleSoftDrop} sx={controlButtonSx}>
-            <ArrowDownwardRoundedIcon sx={{ fontSize: 14 }} />
+            <ArrowDownwardRoundedIcon sx={{ fontSize: 24 }} />
           </Button>
           <Button onClick={() => handleRotate("cw")} sx={controlButtonSx}>
-            <RotateRightRoundedIcon sx={{ fontSize: 16 }} />
+            <RotateRightRoundedIcon sx={{ fontSize: 28 }} />
           </Button>
           <Button onClick={() => handleMove(1)} sx={controlButtonSx}>
-            <ArrowForwardIosRoundedIcon sx={{ fontSize: 14 }} />
+            <ArrowForwardIosRoundedIcon sx={{ fontSize: 24 }} />
           </Button>
         </Box>
 
@@ -251,10 +303,9 @@ export default function Game() {
 const controlButtonSx = {
   flex: 1,
   minWidth: 0,
-  height: 24,
-  minHeight: 24,
+  aspectRatio: "1 / 1",
   padding: 0,
-  borderRadius: "6px",
+  borderRadius: "12px",
   backgroundColor: "#fff",
   color: ACCENT,
   "&:hover": { backgroundColor: "#f3f3f3" },

@@ -16,7 +16,9 @@ export interface Translation {
   playButton: string;
   recordTitle: string;
   recordEmptyBody: string;
-  recordBody: (score: number, words: number) => string;
+  recordScoreCaption: (score: number) => string;
+  recordWordsCaption: (n: number) => string;
+  recordLongestWordCaption: (word: string) => string;
   whatIsTitle: string;
   whatIsBody: string;
   howToPlayTitle: string;
@@ -24,6 +26,10 @@ export interface Translation {
 
   // Game
   scoreLabel: string;
+  levelLabel: string;
+  levelGoalLabel: (current: number, total: number) => string;
+  levelUpTitle: (level: number) => string;
+  levelReachedLabel: (level: number) => string;
   wordsListTitle: string;
   wordsListEmpty: string;
   errorNotInDictionary: string;
@@ -48,13 +54,19 @@ const es: Translation = {
   playButton: "JUGAR",
   recordTitle: "Récord",
   recordEmptyBody: "Todavía no jugaste ninguna partida.",
-  recordBody: (score, words) => `${score} puntos · ${words} palabras encontradas`,
+  recordScoreCaption: (score) => `${score} puntos`,
+  recordWordsCaption: (n) => `Más palabras en una partida: ${n}`,
+  recordLongestWordCaption: (word) => `Palabra más larga: ${word} (${word.length} letras)`,
   whatIsTitle: "¿Qué es Letris?",
   whatIsBody: "Letris es un Tetris de letras. Cada pieza cae con una letra por cuadro, y al encastrar arriba de las demás va formando una sopa de letras. A diferencia del Tetris clásico, las líneas completas no se borran solas: tenés que encontrar palabras deslizando el dedo sobre la grilla para eliminarlas.",
   howToPlayTitle: "¿Cómo jugar?",
-  howToPlayBody: "Movés y girás las piezas con los botones de abajo para acomodar las letras. Cuando veas una palabra formada en la grilla, deslizá el dedo pasando por sus letras: no hace falta que estén en línea recta, podés doblar en cualquier dirección mientras cada letra toque a la anterior. Si existe en el diccionario, se elimina y sumás puntos; las letras de arriba caen para ocupar su lugar. Repetir una palabra ya usada te resta 1 punto. Perdés si las piezas llegan arriba de todo.",
+  howToPlayBody: "Movés y girás las piezas con los botones de abajo para acomodar las letras. Cuando veas una palabra formada en la grilla, deslizá el dedo pasando por sus letras: no hace falta que estén en línea recta, podés doblar en cualquier dirección mientras cada letra toque a la anterior. Si existe en el diccionario, se elimina y sumás puntos; las letras de arriba caen para ocupar su lugar. Repetir una palabra ya usada te resta 1 punto. Cada 5 palabras se completa un nivel: se vacía la grilla y arranca el siguiente. Perdés si las piezas llegan arriba de todo.",
 
   scoreLabel: "Puntos",
+  levelLabel: "Nivel",
+  levelGoalLabel: (current, total) => `Objetivo: ${current}/${total} palabras`,
+  levelUpTitle: (level) => `¡Nivel ${level}!`,
+  levelReachedLabel: (level) => `Nivel alcanzado: ${level}`,
   wordsListTitle: "Palabras encontradas",
   wordsListEmpty: "Formá una palabra en la grilla y seleccionala",
   errorNotInDictionary: "Esa palabra no se encuentra en mi diccionario.",
@@ -79,13 +91,19 @@ const en: Translation = {
   playButton: "PLAY",
   recordTitle: "Best score",
   recordEmptyBody: "You haven't played a game yet.",
-  recordBody: (score, words) => `${score} points · ${words} words found`,
+  recordScoreCaption: (score) => `${score} points`,
+  recordWordsCaption: (n) => `Most words in one game: ${n}`,
+  recordLongestWordCaption: (word) => `Longest word: ${word} (${word.length} letters)`,
   whatIsTitle: "What is Letris?",
   whatIsBody: "Letris is a letter Tetris. Each piece falls with one letter per block, and as pieces stack up they form a word search grid. Unlike classic Tetris, full lines don't clear on their own: you have to find words by swiping across the grid to remove them.",
   howToPlayTitle: "How to play?",
-  howToPlayBody: "Move and rotate pieces with the buttons below to arrange the letters. When you spot a word in the grid, swipe across its letters: they don't need to be in a straight line, you can turn in any direction as long as each letter touches the previous one. If it's in the dictionary, it's removed and you score points; the letters above fall down to fill the gap. Repeating an already-used word costs you 1 point. You lose when the pieces stack up to the top.",
+  howToPlayBody: "Move and rotate pieces with the buttons below to arrange the letters. When you spot a word in the grid, swipe across its letters: they don't need to be in a straight line, you can turn in any direction as long as each letter touches the previous one. If it's in the dictionary, it's removed and you score points; the letters above fall down to fill the gap. Repeating an already-used word costs you 1 point. Every 5 words completes a level: the grid clears and the next one starts. You lose when the pieces stack up to the top.",
 
   scoreLabel: "Score",
+  levelLabel: "Level",
+  levelGoalLabel: (current, total) => `Goal: ${current}/${total} words`,
+  levelUpTitle: (level) => `Level ${level}!`,
+  levelReachedLabel: (level) => `Level reached: ${level}`,
   wordsListTitle: "Words found",
   wordsListEmpty: "Spell a word in the grid and select it",
   errorNotInDictionary: "That word isn't in my dictionary.",
@@ -110,13 +128,19 @@ const pt: Translation = {
   playButton: "JOGAR",
   recordTitle: "Recorde",
   recordEmptyBody: "Você ainda não jogou nenhuma partida.",
-  recordBody: (score, words) => `${score} pontos · ${words} palavras encontradas`,
+  recordScoreCaption: (score) => `${score} pontos`,
+  recordWordsCaption: (n) => `Mais palavras em uma partida: ${n}`,
+  recordLongestWordCaption: (word) => `Palavra mais longa: ${word} (${word.length} letras)`,
   whatIsTitle: "O que é o Letris?",
   whatIsBody: "Letris é um Tetris de letras. Cada peça cai com uma letra por quadrado, e ao se encaixar sobre as outras vai formando um caça-palavras. Diferente do Tetris clássico, as linhas completas não somem sozinhas: você precisa encontrar palavras deslizando o dedo pela grade para eliminá-las.",
   howToPlayTitle: "Como jogar?",
-  howToPlayBody: "Mova e gire as peças com os botões abaixo para organizar as letras. Quando ver uma palavra formada na grade, deslize passando pelas letras: elas não precisam estar em linha reta, você pode virar em qualquer direção contanto que cada letra toque a anterior. Se existir no dicionário, ela é removida e você ganha pontos; as letras de cima caem para ocupar o lugar. Repetir uma palavra já usada tira 1 ponto. Você perde quando as peças chegam até o topo.",
+  howToPlayBody: "Mova e gire as peças com os botões abaixo para organizar as letras. Quando ver uma palavra formada na grade, deslize passando pelas letras: elas não precisam estar em linha reta, você pode virar em qualquer direção contanto que cada letra toque a anterior. Se existir no dicionário, ela é removida e você ganha pontos; as letras de cima caem para ocupar o lugar. Repetir uma palavra já usada tira 1 ponto. A cada 5 palavras se completa um nível: a grade esvazia e começa o próximo. Você perde quando as peças chegam até o topo.",
 
   scoreLabel: "Pontos",
+  levelLabel: "Nível",
+  levelGoalLabel: (current, total) => `Objetivo: ${current}/${total} palavras`,
+  levelUpTitle: (level) => `Nível ${level}!`,
+  levelReachedLabel: (level) => `Nível alcançado: ${level}`,
   wordsListTitle: "Palavras encontradas",
   wordsListEmpty: "Forme uma palavra na grade e selecione",
   errorNotInDictionary: "Essa palavra não está no meu dicionário.",

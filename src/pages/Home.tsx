@@ -83,15 +83,25 @@ export default function Home() {
             {t.recordTitle}
           </Typography>
           {record ? (
-            <>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 0.5 }}>
               <Typography sx={{ fontSize: 42, fontWeight: 900, color: ACCENT, fontFamily: "monospace" }}>
                 {record.score}
               </Typography>
-              <Typography sx={{ fontSize: 13, color: "#888", mb: record.words.length > 0 ? 1.5 : 0 }}>
-                {t.recordBody(record.score, record.wordsFound)}
+              <Typography sx={{ fontSize: 13, color: "#888" }}>
+                {t.recordScoreCaption(record.score)}
               </Typography>
+              {record.wordsFound > 0 && (
+                <Typography sx={{ fontSize: 13, color: "#888" }}>
+                  {t.recordWordsCaption(record.wordsFound)}
+                </Typography>
+              )}
+              {record.longestWord && (
+                <Typography sx={{ fontSize: 13, color: "#888" }}>
+                  {t.recordLongestWordCaption(record.longestWord)}
+                </Typography>
+              )}
               {record.words.length > 0 && (
-                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75 }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.75, mt: 1 }}>
                   {record.words.map((word, i) => (
                     <Box key={i} sx={{
                       px: 1.5, py: 0.5, borderRadius: "6px",
@@ -104,7 +114,7 @@ export default function Home() {
                   ))}
                 </Box>
               )}
-            </>
+            </Box>
           ) : (
             <Typography sx={{ fontSize: 13, color: "#888" }}>{t.recordEmptyBody}</Typography>
           )}

@@ -8,9 +8,12 @@ function storeKey(lang: SupportedLanguage): string {
 
 export interface LetrisRecord {
   score: number;
-  wordsFound: number;
-  words: string[]; // palabras encontradas en la partida que estableció este récord
+  wordsFound: number; // mejor cantidad de palabras encontradas en UNA partida
+  words: string[]; // palabras de la partida que estableció el récord de puntaje
+  longestWord: string; // palabra más larga encontrada en toda la historia
 }
+
+const EMPTY_RECORD: LetrisRecord = { score: 0, wordsFound: 0, words: [], longestWord: "" };
 
 export function getRecord(lang: SupportedLanguage): LetrisRecord | null {
   try {
@@ -21,21 +24,42 @@ export function getRecord(lang: SupportedLanguage): LetrisRecord | null {
       score: parsed.score ?? 0,
       wordsFound: parsed.wordsFound ?? 0,
       words: parsed.words ?? [], // por si el récord se guardó antes de sumar esta lista
+      longestWord: parsed.longestWord ?? "", // ídem, campo agregado después
     };
   } catch {
     return null;
   }
 }
 
-// Guarda el resultado de una partida terminada SOLO si supera el mejor
-// puntaje anterior; en ese caso reemplaza por completo el récord (puntos,
-// cantidad y palabras) por los de esta partida. Si no lo supera, no toca
-// nada. Devuelve true si quedó como nuevo récord.
-export function maybeSaveRecord(lang: SupportedLanguage, score: number, words: string[]): boolean {
-  const current = getRecord(lang);
-  if (current && current.score >= score) return false;
+export interface RecordUpdateResult {
+  scoreRecord: boolean;
+  wordsRecord: boolean;
+  longestWordRecord: boolean;
+  record: LetrisRecord;
+}
 
-  const updated: LetrisRecord = { score, wordsFound: words.length, words };
+// Tres récords independientes que se actualizan cada uno por su cuenta al
+// terminar una partida (no hace falta ganar los tres juntos): mejor
+// puntaje, más palabras encontradas en una partida, y palabra más larga
+// de todos los tiempos. Si ninguno mejora, no se guarda nada.
+export function maybeSaveRecord(lang: SupportedLanguage, score: number, words: string[]): RecordUpdateResult {
+  const current = getRecord(lang) ?? EMPTY_RECORD;
+  const longestThisGame = words.reduce((longest, w) => (w.length > longest.length ? w : longest), "");
+
+  const scoreRecord = score > current.score;
+  const wordsRecord = words.length > current.wordsFound;
+  const longestWordRecord = longestThisGame.length > current.longestWord.length;
+
+  if (!scoreRecord && !wordsRecord && !longestWordRecord) {
+    return { scoreRecord, wordsRecord, longestWordRecord, record: current };
+  }
+
+  const updated: LetrisRecord = {
+    score: scoreRecord ? score : current.score,
+    wordsFound: wordsRecord ? words.length : current.wordsFound,
+    words: scoreRecord ? words : current.words,
+    longestWord: longestWordRecord ? longestThisGame : current.longestWord,
+  };
   localStorage.setItem(storeKey(lang), JSON.stringify(updated));
-  return true;
+  return { scoreRecord, wordsRecord, longestWordRecord, record: updated };
 }

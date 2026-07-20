@@ -83,10 +83,13 @@ export function tryRotate(board: Board, piece: FallingPiece, dir: "cw" | "ccw"):
   return null;
 }
 
-// Nivel de dificultad simple: cada 5 palabras encontradas sube un nivel,
-// hasta un tope, y la caída automática se acelera.
+// Cada WORDS_PER_LEVEL palabras encontradas se completa un nivel: se
+// vacía la grilla, se muestra un cartel y sube la dificultad (caída más
+// rápida). Nivel 1 = 0..4 palabras, nivel 2 = 5..9, nivel 3 = 10..14, etc.
+export const WORDS_PER_LEVEL = 5;
+
 export function levelFromWordsFound(wordsFound: number): number {
-  return 1 + Math.floor(wordsFound / 5);
+  return 1 + Math.floor(wordsFound / WORDS_PER_LEVEL);
 }
 
 export function gravityIntervalMs(level: number): number {
