@@ -24,7 +24,7 @@ export default function FoundWordsList({ title, emptyLabel, words, scoreLabel, s
     }}>
       <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <Typography sx={{ fontSize: 11, color: "#888", fontWeight: 700, textTransform: "uppercase" }}>
-          {title}
+          {title} ({words.length})
         </Typography>
         {score !== undefined && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
