@@ -232,10 +232,10 @@ export default function Game() {
 
   return (
     <Layout onBack={() => navigate("/")}>
-      <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 1 }}>
+      <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column" }}>
         <Box sx={{
           display: "flex", alignItems: "center", justifyContent: "space-between",
-          backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "16px", px: 2, py: 1.25,
+          backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "16px", px: 2, py: 1.25, mb: 2,
         }}>
           <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>
             {t.levelLabel} {level}
@@ -245,21 +245,21 @@ export default function Game() {
           </Typography>
         </Box>
 
-        <Box sx={{ minHeight: 20, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          {errorMsg && (
-            <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.25)", px: 1.5, py: 0.25, borderRadius: 999, fontSize: 12, fontWeight: 700, textAlign: "center" }}>
-              {errorMsg}
-            </Typography>
-          )}
-        </Box>
-
-        <Box sx={{ position: "relative", borderRadius: "16px", overflow: "hidden", backgroundColor: "#fff", p: 1 }}>
+        <Box sx={{ position: "relative", borderRadius: "16px", overflow: "hidden", backgroundColor: "#fff", p: 1, mb: 1 }}>
           <LetrisBoard
             board={gameState.board}
             fallingPiece={gameState.fallingPiece}
             onSelectionEnd={handleSelectionEnd}
             flashCells={flash}
           />
+
+          {errorMsg && (
+            <Box sx={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", zIndex: 2 }}>
+              <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.7)", px: 1.5, py: 0.5, borderRadius: 999, fontSize: 12, fontWeight: 700, textAlign: "center", whiteSpace: "nowrap" }}>
+                {errorMsg}
+              </Typography>
+            </Box>
+          )}
 
           {gameState.phase === "levelup" && levelUpNumber !== null && (
             <Box sx={{
@@ -275,7 +275,7 @@ export default function Game() {
           )}
         </Box>
 
-        <Box sx={{ display: "flex", width: "100%", gap: "2px" }}>
+        <Box sx={{ display: "flex", width: "100%", gap: "2px", mb: 1 }}>
           <Button onClick={() => handleMove(-1)} sx={controlButtonSx}>
             <ArrowBackIosNewRoundedIcon sx={{ fontSize: 24 }} />
           </Button>
