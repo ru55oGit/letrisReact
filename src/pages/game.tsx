@@ -233,7 +233,10 @@ export default function Game() {
   return (
     <Layout onBack={() => navigate("/")}>
       <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 1 }}>
-        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", px: 0.5 }}>
+        <Box sx={{
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "16px", px: 2, py: 1.25,
+        }}>
           <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>
             {t.levelLabel} {level}
           </Typography>
