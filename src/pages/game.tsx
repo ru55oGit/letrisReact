@@ -12,6 +12,7 @@ import Layout from "../components/Layout";
 import LetrisBoard from "../components/LetrisBoard";
 import FoundWordsList, { FoundWordEntry } from "../components/FoundWordsList";
 import { useLanguage } from "../i18n/LanguageContext";
+import { recordLastPlayed } from "../utils/lastPlayedState";
 import {
   Board,
   FallingPiece,
@@ -68,6 +69,10 @@ export default function Game() {
   const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const levelUpTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedRecordRef = useRef(false);
+
+  useEffect(() => {
+    recordLastPlayed();
+  }, []);
 
   const level = levelFromWordsFound(foundWords.length);
   const wordsInLevel = wordsIntoCurrentLevel(foundWords.length);
