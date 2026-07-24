@@ -1,6 +1,7 @@
 import esWords from "an-array-of-spanish-words";
 import enWords from "an-array-of-english-words";
 import ptWords from "an-array-of-portuguese-words";
+import { EXTRA_NAMES_ES } from "./extraNames";
 import { SupportedLanguage } from "../i18n/translations";
 
 // El pozo del Letris solo usa A-Z sin acentos (igual que la grilla de
@@ -26,7 +27,7 @@ function buildWordSet(rawWords: string[]): Set<string> {
 }
 
 const WORD_SETS: Record<SupportedLanguage, Set<string>> = {
-  es: buildWordSet(esWords as unknown as string[]),
+  es: buildWordSet([...(esWords as unknown as string[]), ...EXTRA_NAMES_ES]),
   en: buildWordSet(enWords as unknown as string[]),
   pt: buildWordSet(ptWords as unknown as string[]),
 };
