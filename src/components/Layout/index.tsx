@@ -139,7 +139,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onBack, showFooter = false })
             textAlign: "center", fontSize: 12, color: "rgba(255,255,255,0.7)",
             py: 2, position: "relative", zIndex: 5,
           }}>
-            © {new Date().getFullYear()} {t.appName}
+            © {new Date().getFullYear()} {t.appName} ·{" "}
+            <a href="/privacidad" style={{ color: "inherit", textDecoration: "underline" }}>
+              {t.privacyPolicyLabel}
+            </a>
           </Box>
         )}
       </Box>
@@ -159,8 +162,14 @@ const Layout: React.FC<LayoutProps> = ({ children, onBack, showFooter = false })
             </ListItem>
             <ListItem disablePadding>
               <ListItemButton onClick={() => { setMenuOpen(false); navigate("/game"); }}
-                sx={{ px: 3, py: 2, backgroundColor: "#fff", "&:hover": { backgroundColor: "#f5f5f5" } }}>
+                sx={{ px: 3, py: 2, backgroundColor: "#fff", borderBottom: "1px solid #e0e0e0", "&:hover": { backgroundColor: "#f5f5f5" } }}>
                 <ListItemText primary={t.drawerPlay} primaryTypographyProps={{ fontSize: 22, fontWeight: 500, color: ACCENT }} />
+              </ListItemButton>
+            </ListItem>
+            <ListItem disablePadding>
+              <ListItemButton onClick={() => { setMenuOpen(false); navigate("/privacidad"); }}
+                sx={{ px: 3, py: 2, backgroundColor: "#fff", "&:hover": { backgroundColor: "#f5f5f5" } }}>
+                <ListItemText primary={t.privacyPolicyLabel} primaryTypographyProps={{ fontSize: 22, fontWeight: 500, color: ACCENT }} />
               </ListItemButton>
             </ListItem>
           </List>

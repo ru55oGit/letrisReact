@@ -6,6 +6,7 @@ export interface Translation {
   drawerHome: string;
   drawerPlay: string;
   language: string;
+  privacyPolicyLabel: string;
 
   // Home
   tagline: string;
@@ -45,6 +46,7 @@ const es: Translation = {
   appName: "Letris",
   drawerHome: "Inicio",
   drawerPlay: "Jugar",
+  privacyPolicyLabel: "Política de Privacidad",
   language: "Idioma",
 
   tagline: "encastrá · formá · sumá",
@@ -83,6 +85,7 @@ const en: Translation = {
   appName: "Letris",
   drawerHome: "Home",
   drawerPlay: "Play",
+  privacyPolicyLabel: "Privacy Policy",
   language: "Language",
 
   tagline: "stack · spell · score",
@@ -121,6 +124,7 @@ const pt: Translation = {
   appName: "Letris",
   drawerHome: "Início",
   drawerPlay: "Jogar",
+  privacyPolicyLabel: "Política de Privacidade",
   language: "Idioma",
 
   tagline: "encaixe · forme · pontue",

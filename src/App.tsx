@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { createTheme, ThemeProvider, CssBaseline } from "@mui/material";
 import Home from "./pages/Home";
 import Game from "./pages/game";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const theme = createTheme({
   palette: {
@@ -22,6 +23,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game" element={<Game />} />
+          <Route path="/privacidad" element={<PrivacyPolicy />} />
         </Routes>
       </Router>
     </ThemeProvider>
