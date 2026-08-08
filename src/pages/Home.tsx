@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
+import ArrowBackRoundedIcon from "@mui/icons-material/ArrowBackRounded";
 import Layout from "../components/Layout";
 import LanguageSelector from "../components/LanguageSelector";
 import HowToPlayDemo from "../components/HowToPlayDemo";
@@ -14,8 +15,12 @@ import { getDaysSinceLastPlayed } from "../utils/lastPlayedState";
 const ACCENT = "#e74c3c";
 const CARD_BG = "#eb6f62";
 
+const HUB_URL = "https://dejadeboludear.netlify.app/";
+
 export default function Home() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const fromHub = searchParams.get("from") === "boludeando";
   const { t, currentLanguage } = useLanguage();
   const [record, setRecord] = useState<LetrisRecord | null>(null);
 
@@ -39,6 +44,29 @@ export default function Home() {
 
   return (
     <Layout showFooter>
+      {fromHub && (
+        <Box
+          component="a"
+          href={HUB_URL}
+          aria-label="Volver"
+          sx={{
+            position: "absolute",
+            top: 16,
+            left: 16,
+            zIndex: 1000,
+            width: 40,
+            height: 40,
+            borderRadius: "8px",
+            backgroundColor: "#fff",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
+          }}
+        >
+          <ArrowBackRoundedIcon sx={{ color: ACCENT }} />
+        </Box>
+      )}
       <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography variant="h2" sx={{
