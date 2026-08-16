@@ -205,17 +205,6 @@ export default function Game() {
     return (
       <Layout onBack={() => navigate("/")}>
         <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
-          <Button onClick={restartGame} variant="contained" size="large" sx={{
-            backgroundColor: "#fff", color: ACCENT, fontWeight: 800, fontSize: 18,
-            py: 1.6, borderRadius: 999, textTransform: "none",
-            boxShadow: "0 0 0 4px rgba(255,255,255,0.35), 0 10px 24px rgba(0,0,0,0.4)",
-          }}>
-            {t.playAgainButton}
-          </Button>
-          <Button onClick={() => navigate("/")} sx={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
-            {t.backToHomeButton}
-          </Button>
-
           <Box sx={{ borderRadius: "16px", backgroundColor: "#f3f3f3", p: 3, display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
             <Typography sx={{ fontSize: 52 }}>🧩</Typography>
             <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 26, color: "#222", textAlign: "center" }}>
@@ -230,6 +219,17 @@ export default function Game() {
             </Typography>
             <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
           </Box>
+
+          <Button onClick={restartGame} variant="contained" size="large" sx={{
+            backgroundColor: "#fff", color: ACCENT, fontWeight: 800, fontSize: 18,
+            py: 1.6, borderRadius: 999, textTransform: "none",
+            boxShadow: "0 0 0 4px rgba(255,255,255,0.35), 0 10px 24px rgba(0,0,0,0.4)",
+          }}>
+            {t.playAgainButton}
+          </Button>
+          <Button onClick={() => navigate("/")} sx={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
+            {t.backToHomeButton}
+          </Button>
         </Box>
       </Layout>
     );
