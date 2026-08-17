@@ -8,6 +8,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ### Added
 - Home: si se llega con `?from=boludeando` en la URL (viene del hub "Dejá de Boludear"), se muestra un botón de volver arriba a la izquierda (blanco, flecha roja, radius 8px) que lleva de vuelta al hub
 ### Changed
+- AdSense: sacar el script del `index.html` (se cargaba en todo el sitio) y cargarlo solo desde Home y Privacidad (componente `AdsenseScript`) — nunca en `/game`, que es una pantalla de juego sin texto. Mismo fix que en Enganchalo, que Google rechazó por "anuncios servidos por Google en pantallas sin contenido del editor"
 - Home: agregar emoji de momento del día al saludo (☀️/🌤️/🌙), mismo tratamiento que ya tenía Enganchalo
 - Game over: mover los botones "Jugar de nuevo"/"Volver al inicio" debajo del box de palabras encontradas (antes quedaban arriba de todo)
 
