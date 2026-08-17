@@ -4,5 +4,5 @@ export const EXTRA_WORDS_ES: string[] = [
   "Ambientalista", "Cerrajera", "Carretillera", "Fonoaudiólogo", "Fonoaudióloga", "Imprentero",
   "Imprentera", "Lutier", "Mercadólogo", "Mercadóloga", "Maquetador", "Maquetadora", "Nutriólogo",
   "Nutrióloga", "Naturópata", "Optometrista", "Plomera", "Soldadora", "Tanatoesteticista",
-  "Tanatopractor", "Tanatopractora", "Tatuador", "Tatuadora", "Wifi",
+  "Tanatopractor", "Tanatopractora", "Tatuador", "Tatuadora", "Wifi", "Kiwi",
 ];
