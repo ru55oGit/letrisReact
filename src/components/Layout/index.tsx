@@ -120,6 +120,7 @@ const Layout: React.FC<LayoutProps> = ({ children, onBack, showFooter = false })
               transform: "translate(-50%, -50%)",
               fontFamily: "Lobster, cursive", fontSize: 40, color: ACCENT,
               cursor: "pointer", zIndex: 2, width: "max-content",
+              userSelect: "none", WebkitUserSelect: "none", WebkitTouchCallout: "none",
             }} onClick={() => window.location.replace("/")}>
               {t.appName}
             </Box>
