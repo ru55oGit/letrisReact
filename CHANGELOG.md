@@ -13,6 +13,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 
 ### Fixed
 - Header: tocar el título (para volver a Home) seleccionaba el texto en mobile y disparaba el popup de "Buscar en Google" del navegador — agregar `userSelect: none`
+- Home: la demo (`HowToPlayDemo`) dejaba una franja gris vacía abajo — el box que la envuelve forzaba `aspectRatio: "1"` (cuadrado) pero la grilla interna es 8x7 (0.875), así que sobraba espacio. Sacar el aspectRatio forzado y dejar que el alto salga del contenido (encontrado al hacer el mismo fix en Viborealo, que copió este mismo patrón)
 - Home: agregar emoji de momento del día al saludo (☀️/🌤️/🌙), mismo tratamiento que ya tenía Enganchalo
 - Game over: mover los botones "Jugar de nuevo"/"Volver al inicio" debajo del box de palabras encontradas (antes quedaban arriba de todo)
 

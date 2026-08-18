@@ -92,7 +92,7 @@ export default function Home() {
         {/* Card de juego: demo animada + botón Jugar */}
         <Box sx={{ width: "100%", borderRadius: "24px", backgroundColor: CARD_BG, p: 2, boxShadow: "0 12px 24px rgba(0,0,0,0.18)" }}>
           <Box sx={{
-            width: "100%", aspectRatio: "1", borderRadius: "16px", backgroundColor: "#f3f3f3",
+            width: "100%", borderRadius: "16px", backgroundColor: "#f3f3f3",
             p: 1.25, mb: 2,
           }}>
             <HowToPlayDemo />
