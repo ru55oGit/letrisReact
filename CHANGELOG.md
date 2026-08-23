@@ -8,6 +8,9 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ### Added
 - Home: si se llega desde el hub "Boludeando" (`?from=boludeando`, ahora en www.boludeando.com), se muestra un header blanco real arriba del título (mismo estilo que el header del juego, ya no una cajita flotante que se pisaba con nombres largos) con flecha para volver. Queda persistido en localStorage para siempre en ese dispositivo — si alguien comparte la URL directa sin pasar por el hub, no aparece
 - Diccionario (ES): agregar "wifi" y "kiwi" a `EXTRA_WORDS_ES` (no están en an-array-of-spanish-words)
+
+### Fixed
+- Política de Privacidad: el email de contacto (`contacto@letris.net`) no tenía registro MX — cualquier mail enviado ahí rebotaba. Cambiado a patricio.ezequiel.toledo@gmail.com en los 3 idiomas
 ### Changed
 - AdSense: sacar el script del `index.html` (se cargaba en todo el sitio) y cargarlo solo desde Home y Privacidad (componente `AdsenseScript`) — nunca en `/game`, que es una pantalla de juego sin texto. Mismo fix que en Enganchalo, que Google rechazó por "anuncios servidos por Google en pantallas sin contenido del editor"
 
