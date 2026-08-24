@@ -7,6 +7,7 @@ El formato está basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1
 ## [Unreleased]
 ### Added
 - Home: si se llega desde el hub "Boludeando" (`?from=boludeando`, ahora en www.boludeando.com), se muestra un header blanco real arriba del título (mismo estilo que el header del juego, ya no una cajita flotante que se pisaba con nombres largos) con flecha para volver. Queda persistido en localStorage para siempre en ese dispositivo — si alguien comparte la URL directa sin pasar por el hub, no aparece
+- `/game`: bloque colapsable "¿Cómo jugar?" (cerrado por default, reusa el mismo texto que ya existía en Home) — suma contenido de texto real a la pantalla de juego, que antes era pura UI sin texto
 - Diccionario (ES): agregar "wifi" y "kiwi" a `EXTRA_WORDS_ES` (no están en an-array-of-spanish-words)
 
 ### Fixed

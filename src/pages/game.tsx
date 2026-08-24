@@ -11,6 +11,7 @@ import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
 import Layout from "../components/Layout";
 import LetrisBoard from "../components/LetrisBoard";
 import FoundWordsList, { FoundWordEntry } from "../components/FoundWordsList";
+import HowToPlayCollapse from "../components/HowToPlayCollapse";
 import { useLanguage } from "../i18n/LanguageContext";
 import { recordLastPlayed } from "../utils/lastPlayedState";
 import {
@@ -305,6 +306,8 @@ export default function Game() {
           scoreLabel={t.scoreLabel}
           score={score}
         />
+
+        <HowToPlayCollapse title={t.howToPlayTitle} body={t.howToPlayBody} />
       </Box>
     </Layout>
   );
