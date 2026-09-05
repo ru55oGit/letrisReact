@@ -58,7 +58,7 @@ const content: Record<SupportedLanguage, PolicyContent> = {
         body: (
           <>
             Si tenés preguntas sobre esta política, podés contactarnos en{" "}
-            <a href="mailto:patricio.ezequiel.toledo@gmail.com" style={linkStyle}>patricio.ezequiel.toledo@gmail.com</a>.
+            <a href="mailto:boludeando.app@gmail.com" style={linkStyle}>boludeando.app@gmail.com</a>.
           </>
         ),
       },
@@ -107,7 +107,7 @@ const content: Record<SupportedLanguage, PolicyContent> = {
         body: (
           <>
             If you have questions about this policy, you can reach us at{" "}
-            <a href="mailto:patricio.ezequiel.toledo@gmail.com" style={linkStyle}>patricio.ezequiel.toledo@gmail.com</a>.
+            <a href="mailto:boludeando.app@gmail.com" style={linkStyle}>boludeando.app@gmail.com</a>.
           </>
         ),
       },
@@ -156,7 +156,7 @@ const content: Record<SupportedLanguage, PolicyContent> = {
         body: (
           <>
             Se você tiver dúvidas sobre esta política, pode nos contatar em{" "}
-            <a href="mailto:patricio.ezequiel.toledo@gmail.com" style={linkStyle}>patricio.ezequiel.toledo@gmail.com</a>.
+            <a href="mailto:boludeando.app@gmail.com" style={linkStyle}>boludeando.app@gmail.com</a>.
           </>
         ),
       },
