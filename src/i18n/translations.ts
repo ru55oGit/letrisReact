@@ -25,6 +25,8 @@ export interface Translation {
   whatIsBody: string;
   howToPlayTitle: string;
   howToPlayBody: string;
+  faqTitle: string;
+  faq: { q: string; a: string }[];
 
   // Game
   scoreLabel: string;
@@ -65,6 +67,15 @@ const es: Translation = {
   whatIsBody: "Letris es un Tetris de letras. Cada pieza cae con una letra por cuadro, y al encastrar arriba de las demás va formando una sopa de letras. A diferencia del Tetris clásico, las líneas completas no se borran solas: tenés que encontrar palabras deslizando el dedo sobre la grilla para eliminarlas.",
   howToPlayTitle: "¿Cómo jugar?",
   howToPlayBody: "Movés y girás las piezas con los botones de abajo para acomodar las letras. Cuando veas una palabra formada en la grilla, deslizá el dedo pasando por sus letras: no hace falta que estén en línea recta, podés doblar en cualquier dirección mientras cada letra toque a la anterior. Si existe en el diccionario, se elimina y sumás puntos; las letras de arriba caen para ocupar su lugar. Repetir una palabra ya usada te resta 1 punto. Cada 5 palabras se completa un nivel: se vacía la grilla y arranca el siguiente. Perdés si las piezas llegan arriba de todo.",
+  faqTitle: "Preguntas frecuentes",
+  faq: [
+    { q: "¿Letris es gratis?", a: "Sí, jugar a Letris es completamente gratis. La app se sostiene con publicidad, nunca vas a tener que pagar para jugar." },
+    { q: "¿Necesito crear una cuenta?", a: "No. Tu récord y tu progreso se guardan en este dispositivo automáticamente, no hace falta registrarse ni iniciar sesión." },
+    { q: "¿Cómo subo de nivel?", a: "Cada 5 palabras que encontrás se completa un nivel: la grilla se vacía y arranca el siguiente, con piezas que caen cada vez más rápido." },
+    { q: "¿Qué pasa si repito una palabra ya usada?", a: "Restás 1 punto. Cada palabra solo suma puntos la primera vez que la encontrás en esa partida." },
+    { q: "¿Cuándo termina la partida?", a: "Perdés cuando las piezas se apilan hasta arriba de todo. Podés jugar de nuevo las veces que quieras." },
+    { q: "¿En qué idiomas puedo jugar?", a: "Letris está disponible en español, inglés y portugués. Podés cambiar el idioma desde el selector de la parte de abajo de esta pantalla." },
+  ],
 
   scoreLabel: "Puntos",
   levelLabel: "Nivel",
@@ -104,6 +115,15 @@ const en: Translation = {
   whatIsBody: "Letris is a letter Tetris. Each piece falls with one letter per block, and as pieces stack up they form a word search grid. Unlike classic Tetris, full lines don't clear on their own: you have to find words by swiping across the grid to remove them.",
   howToPlayTitle: "How to play?",
   howToPlayBody: "Move and rotate pieces with the buttons below to arrange the letters. When you spot a word in the grid, swipe across its letters: they don't need to be in a straight line, you can turn in any direction as long as each letter touches the previous one. If it's in the dictionary, it's removed and you score points; the letters above fall down to fill the gap. Repeating an already-used word costs you 1 point. Every 5 words completes a level: the grid clears and the next one starts. You lose when the pieces stack up to the top.",
+  faqTitle: "Frequently asked questions",
+  faq: [
+    { q: "Is Letris free?", a: "Yes, playing Letris is completely free. The app runs on ads, so you'll never have to pay to play." },
+    { q: "Do I need to create an account?", a: "No. Your record and progress are saved automatically on this device — no sign-up or login required." },
+    { q: "How do I level up?", a: "Every 5 words you find completes a level: the grid clears and the next one starts, with pieces falling faster each time." },
+    { q: "What happens if I repeat an already-used word?", a: "You lose 1 point. Each word only scores points the first time you find it in that game." },
+    { q: "When does the game end?", a: "You lose when the pieces stack up all the way to the top. You can start a new game as many times as you want." },
+    { q: "What languages can I play in?", a: "Letris is available in Spanish, English and Portuguese. You can switch languages from the selector at the bottom of this screen." },
+  ],
 
   scoreLabel: "Score",
   levelLabel: "Level",
@@ -143,6 +163,15 @@ const pt: Translation = {
   whatIsBody: "Letris é um Tetris de letras. Cada peça cai com uma letra por quadrado, e ao se encaixar sobre as outras vai formando um caça-palavras. Diferente do Tetris clássico, as linhas completas não somem sozinhas: você precisa encontrar palavras deslizando o dedo pela grade para eliminá-las.",
   howToPlayTitle: "Como jogar?",
   howToPlayBody: "Mova e gire as peças com os botões abaixo para organizar as letras. Quando ver uma palavra formada na grade, deslize passando pelas letras: elas não precisam estar em linha reta, você pode virar em qualquer direção contanto que cada letra toque a anterior. Se existir no dicionário, ela é removida e você ganha pontos; as letras de cima caem para ocupar o lugar. Repetir uma palavra já usada tira 1 ponto. A cada 5 palavras se completa um nível: a grade esvazia e começa o próximo. Você perde quando as peças chegam até o topo.",
+  faqTitle: "Perguntas frequentes",
+  faq: [
+    { q: "O Letris é grátis?", a: "Sim, jogar Letris é totalmente grátis. O app se sustenta com publicidade, você nunca vai precisar pagar para jogar." },
+    { q: "Preciso criar uma conta?", a: "Não. Seu recorde e seu progresso são salvos automaticamente neste dispositivo, não precisa se cadastrar nem fazer login." },
+    { q: "Como eu subo de nível?", a: "A cada 5 palavras que você encontra, completa um nível: a grade esvazia e começa o próximo, com as peças caindo cada vez mais rápido." },
+    { q: "O que acontece se eu repetir uma palavra já usada?", a: "Você perde 1 ponto. Cada palavra só soma pontos na primeira vez que você a encontra naquela partida." },
+    { q: "Quando a partida termina?", a: "Você perde quando as peças se empilham até o topo. Pode jogar de novo quantas vezes quiser." },
+    { q: "Em quais idiomas posso jogar?", a: "O Letris está disponível em espanhol, inglês e português. Você pode trocar o idioma no seletor na parte de baixo desta tela." },
+  ],
 
   scoreLabel: "Pontos",
   levelLabel: "Nível",

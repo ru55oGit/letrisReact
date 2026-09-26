@@ -164,6 +164,20 @@ export default function Home() {
           <Typography variant="h5" sx={{ fontWeight: 800, color: "#fff", mb: 1 }}>{t.howToPlayTitle}</Typography>
           <Typography sx={{ color: "rgba(255,255,255,0.85)", lineHeight: 1.7 }}>{t.howToPlayBody}</Typography>
         </Box>
+
+        <Box component="section" sx={{ backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "24px", px: 2, py: 2.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: "#fff", mb: 1.5 }}>{t.faqTitle}</Typography>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 1.75 }}>
+            {t.faq.map((item, i) => (
+              <Box key={i}>
+                <Typography sx={{ color: "#fff", fontWeight: 700, mb: 0.25 }}>{item.q}</Typography>
+                <Typography sx={{ color: "rgba(255,255,255,0.85)", lineHeight: 1.6, fontSize: 15 }}>
+                  {item.a}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </Box>
       </Box>
 
       <LanguageSelector />
