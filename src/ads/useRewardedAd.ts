@@ -51,7 +51,7 @@ export function useRewardedAd(
 
     setLoadingAd(true);
     const sessionId = getAdSessionId();
-    const ad = await fetchNextAd(slot, locale, sessionId);
+    const { ad } = await fetchNextAd(slot, locale, sessionId);
     setLoadingAd(false);
 
     if (!ad || !ad.rewardToken) {

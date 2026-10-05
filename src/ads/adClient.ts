@@ -4,17 +4,24 @@ import type { AdCreative } from "./types";
 
 const API_BASE = "https://ads-api.boludeando.com/api";
 
+export interface NextAdResult {
+  ad: AdCreative | null;
+  // "ad_free" = el dispositivo pagó para sacarse los anuncios — a
+  // diferencia de "no_fill"/"slot_not_found", acá NO hay que mostrar
+  // ningún fallback, el jugador pagó justamente para no ver nada.
+  reason?: string;
+}
+
 export async function fetchNextAd(
   slot: string,
   locale: string,
   sessionId: string,
-): Promise<AdCreative | null> {
+): Promise<NextAdResult> {
   const params = new URLSearchParams({ slot, locale, session: sessionId });
   const res = await fetch(`${API_BASE}/ads/next?${params.toString()}`);
-  if (!res.ok) return null;
+  if (!res.ok) return { ad: null };
 
-  const data = (await res.json()) as { ad: AdCreative | null };
-  return data.ad;
+  return (await res.json()) as NextAdResult;
 }
 
 export async function reportImpression(

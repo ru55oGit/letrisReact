@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { fetchNextAd, reportImpression, reportClick } from "./adClient";
 import { getAdSessionId } from "./adSessionId";
+import AdSlotAvailableBanner from "./AdSlotAvailableBanner";
 import type { AdCreative } from "./types";
 
 interface HouseAdBannerProps {
@@ -14,18 +15,27 @@ interface HouseAdBannerProps {
 
 export default function HouseAdBanner({ slot, gameSlug, locale }: HouseAdBannerProps) {
   const [ad, setAd] = useState<AdCreative | null>(null);
+  // null = todavía no respondió la API; false = no hay nada que mostrar
+  // (ni siquiera el fallback, ver "ad_free" abajo).
+  const [showFallback, setShowFallback] = useState(false);
   const impressionIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
     const sessionId = getAdSessionId();
 
-    fetchNextAd(slot, locale, sessionId).then((result) => {
-      if (cancelled || !result) return;
-      setAd(result);
-      reportImpression(result, gameSlug, sessionId, locale).then((id) => {
-        if (!cancelled) impressionIdRef.current = id;
-      });
+    fetchNextAd(slot, locale, sessionId).then(({ ad: result, reason }) => {
+      if (cancelled) return;
+      if (result) {
+        setAd(result);
+        reportImpression(result, gameSlug, sessionId, locale).then((id) => {
+          if (!cancelled) impressionIdRef.current = id;
+        });
+        return;
+      }
+      // "ad_free": el dispositivo pagó para sacarse los anuncios — ahí sí
+      // va null de verdad, ni el fallback de "anunciá acá" corresponde.
+      setShowFallback(reason !== "ad_free");
     });
 
     return () => {
@@ -33,7 +43,7 @@ export default function HouseAdBanner({ slot, gameSlug, locale }: HouseAdBannerP
     };
   }, [slot, gameSlug, locale]);
 
-  if (!ad) return null;
+  if (!ad) return showFallback ? <AdSlotAvailableBanner /> : null;
 
   return (
     <Box
