@@ -2,10 +2,7 @@
 // Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
 import type { AdCreative } from "./types";
 
-// TODO: cambiar a "https://ads-api.boludeando.com" cuando el DNS del
-// subdominio esté activo (pendiente, ver docs/plan.md §10.6). Por ahora
-// apunta directo al site de Netlify.
-const API_BASE = "https://boludeandoads.netlify.app/api";
+const API_BASE = "https://ads-api.boludeando.com/api";
 
 export async function fetchNextAd(
   slot: string,

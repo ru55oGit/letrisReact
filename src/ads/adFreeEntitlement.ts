@@ -2,9 +2,7 @@
 // Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
 import { getAdSessionId } from "./adSessionId";
 
-// TODO: mismo API_BASE que adClient.ts, cambiar junto con ese cuando el
-// subdominio ads-api.boludeando.com esté activo.
-const API_BASE = "https://boludeandoads.netlify.app/api";
+const API_BASE = "https://ads-api.boludeando.com/api";
 
 // Cache en memoria del proceso (no localStorage): un flag local se edita en
 // 10 segundos desde devtools, así que cada chequeo real confirma contra el
