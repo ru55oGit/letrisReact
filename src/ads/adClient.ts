@@ -10,6 +10,10 @@ export interface NextAdResult {
   // diferencia de "no_fill"/"slot_not_found", acá NO hay que mostrar
   // ningún fallback, el jugador pagó justamente para no ver nada.
   reason?: string;
+  // Solo en slots 'rewarded' sin inventario real (reason: "no_fill"): token
+  // para poder reclamar la recompensa igual mirando el fallback de
+  // "anunciá acá" en vez de un creative real.
+  rewardToken?: string;
 }
 
 export async function fetchNextAd(

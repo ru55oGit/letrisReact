@@ -4,6 +4,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import RewardedFallbackCreative from "./RewardedFallbackCreative";
 import type { AdCreative } from "./types";
 
 interface RewardedAdModalProps {
@@ -29,8 +30,6 @@ export default function RewardedAdModal({
   skipLabel,
   waitLabel,
 }: RewardedAdModalProps) {
-  if (!adCreative) return null;
-
   return (
     <Modal open={open} onClose={onSkip} aria-labelledby="rewarded-ad-title">
       <Box
@@ -46,11 +45,15 @@ export default function RewardedAdModal({
           boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
         }}
       >
-        <img
-          src={adCreative.assetUrl}
-          alt={adCreative.headline ?? "Publicidad"}
-          style={{ display: "block", width: adCreative.width ?? 300, borderRadius: 8 }}
-        />
+        {adCreative ? (
+          <img
+            src={adCreative.assetUrl}
+            alt={adCreative.headline ?? "Publicidad"}
+            style={{ display: "block", width: adCreative.width ?? 300, borderRadius: 8 }}
+          />
+        ) : (
+          <RewardedFallbackCreative />
+        )}
 
         <Button
           variant="contained"

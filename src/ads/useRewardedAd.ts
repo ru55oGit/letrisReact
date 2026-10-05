@@ -22,6 +22,10 @@ export function useRewardedAd(
 ) {
   const [loadingAd, setLoadingAd] = useState(false);
   const [adCreative, setAdCreative] = useState<AdCreative | null>(null);
+  // Separado de adCreative: en el caso fallback (sin inventario real)
+  // adCreative queda null pero igual hay token para reclamar la recompensa
+  // — ver RewardedFallbackCreative.
+  const [rewardToken, setRewardToken] = useState<string | null>(null);
   const [showingAd, setShowingAd] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(() => getCooldownRemainingSeconds(slot));
   const [secondsUntilCanConfirm, setSecondsUntilCanConfirm] = useState(MIN_VIEW_SECONDS);
@@ -51,37 +55,45 @@ export function useRewardedAd(
 
     setLoadingAd(true);
     const sessionId = getAdSessionId();
-    const { ad } = await fetchNextAd(slot, locale, sessionId);
+    const { ad, rewardToken: fallbackToken } = await fetchNextAd(slot, locale, sessionId);
     setLoadingAd(false);
 
-    if (!ad || !ad.rewardToken) {
-      // Sin inventario o sin token (ej. slot mal configurado como no-rewarded).
+    // Con creative real el token viaja en ad.rewardToken; sin inventario
+    // (fallback "anunciá acá") viaja suelto en fallbackToken — cualquiera
+    // de los dos alcanza para poder reclamar la recompensa.
+    const token = ad?.rewardToken ?? fallbackToken;
+    if (!token) {
+      // Ni ad real ni fallback: slot mal configurado como no-rewarded.
       return;
     }
 
     setAdCreative(ad);
+    setRewardToken(token);
     setShowingAd(true);
-    reportImpression(ad, gameSlug, sessionId, locale).then((id) => {
-      impressionIdRef.current = id;
-    });
+    if (ad) {
+      reportImpression(ad, gameSlug, sessionId, locale).then((id) => {
+        impressionIdRef.current = id;
+      });
+    }
   }, [canShowAd, slot, gameSlug, locale]);
 
   const resetAfterAd = useCallback(() => {
     setShowingAd(false);
     setAdCreative(null);
+    setRewardToken(null);
     impressionIdRef.current = null;
     setCooldown(slot);
     setCooldownSeconds(getCooldownRemainingSeconds(slot));
   }, [slot]);
 
   const handleAdWatched = useCallback(async () => {
-    if (!canConfirmReward || !adCreative?.rewardToken) return;
+    if (!canConfirmReward || !rewardToken) return;
 
     const sessionId = getAdSessionId();
-    const ok = await reportReward(adCreative.rewardToken, gameSlug, sessionId, rewardType);
+    const ok = await reportReward(rewardToken, gameSlug, sessionId, rewardType);
     resetAfterAd();
     if (ok) grantReward();
-  }, [canConfirmReward, adCreative, gameSlug, rewardType, grantReward, resetAfterAd]);
+  }, [canConfirmReward, rewardToken, gameSlug, rewardType, grantReward, resetAfterAd]);
 
   const handleAdSkipped = useCallback(() => {
     resetAfterAd();
