@@ -8,6 +8,7 @@ import Layout from "../components/Layout";
 import AdsenseScript from "../components/AdsenseScript";
 import LanguageSelector from "../components/LanguageSelector";
 import HowToPlayDemo from "../components/HowToPlayDemo";
+import { isAdFree, purchaseAdFree, syncAdFreeAfterReturn } from "../ads/adFreeEntitlement";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getRecord, LetrisRecord } from "../utils/letrisRecordState";
 import { getDaysSinceLastPlayed } from "../utils/lastPlayedState";
@@ -20,13 +21,45 @@ const HUB_URL = "https://www.boludeando.com/";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const fromHubParam = searchParams.get("from") === "boludeando";
   const [showHubHeader] = useState(() => fromHubParam || cameFromHubBefore());
   useEffect(() => {
     if (fromHubParam) markFromHub();
   }, [fromHubParam]);
   const { t, currentLanguage } = useLanguage();
+
+  const [adFree, setAdFree] = useState(false);
+  const [buyingAdFree, setBuyingAdFree] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("adfree_return") === "1") {
+      syncAdFreeAfterReturn().then((active) => {
+        setAdFree(active);
+        setSearchParams(
+          (prev) => {
+            prev.delete("adfree_return");
+            return prev;
+          },
+          { replace: true },
+        );
+      });
+    } else {
+      isAdFree().then(setAdFree);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleRemoveAds = async () => {
+    setBuyingAdFree(true);
+    const returnUrl = `${window.location.origin}${window.location.pathname}?adfree_return=1`;
+    const checkoutUrl = await purchaseAdFree(returnUrl);
+    if (checkoutUrl) {
+      window.location.href = checkoutUrl;
+    } else {
+      setBuyingAdFree(false);
+    }
+  };
   const [record, setRecord] = useState<LetrisRecord | null>(null);
 
   useEffect(() => {
@@ -154,6 +187,19 @@ export default function Home() {
             <Typography sx={{ fontSize: 13, color: "#888" }}>{t.recordEmptyBody}</Typography>
           )}
         </Box>
+
+        {!adFree && (
+          <Box sx={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              size="small"
+              onClick={handleRemoveAds}
+              disabled={buyingAdFree}
+              sx={{ color: "rgba(255,255,255,0.7)", textTransform: "none", fontSize: 13 }}
+            >
+              {buyingAdFree ? t.removeAdsButtonBuying : t.removeAdsButton}
+            </Button>
+          </Box>
+        )}
 
         <Box component="section" sx={{ backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "24px", px: 2, py: 2.5 }}>
           <Typography variant="h5" sx={{ fontWeight: 800, color: "#fff", mb: 1 }}>{t.whatIsTitle}</Typography>

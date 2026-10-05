@@ -21,6 +21,8 @@ export interface Translation {
   recordScoreCaption: (score: number) => string;
   recordWordsCaption: (n: number) => string;
   recordLongestWordCaption: (word: string) => string;
+  removeAdsButton: string;
+  removeAdsButtonBuying: string;
   whatIsTitle: string;
   whatIsBody: string;
   howToPlayTitle: string;
@@ -67,6 +69,8 @@ const es: Translation = {
   recordScoreCaption: (score) => `${score} puntos`,
   recordWordsCaption: (n) => `Más palabras en una partida: ${n}`,
   recordLongestWordCaption: (word) => `Palabra más larga: ${word} (${word.length} letras)`,
+  removeAdsButton: "Sacar los anuncios",
+  removeAdsButtonBuying: "Redirigiendo a MercadoPago...",
   whatIsTitle: "¿Qué es Letris?",
   whatIsBody: "Letris es un Tetris de letras. Cada pieza cae con una letra por cuadro, y al encastrar arriba de las demás va formando una sopa de letras. A diferencia del Tetris clásico, las líneas completas no se borran solas: tenés que encontrar palabras deslizando el dedo sobre la grilla para eliminarlas.",
   howToPlayTitle: "¿Cómo jugar?",
@@ -119,6 +123,8 @@ const en: Translation = {
   recordScoreCaption: (score) => `${score} points`,
   recordWordsCaption: (n) => `Most words in one game: ${n}`,
   recordLongestWordCaption: (word) => `Longest word: ${word} (${word.length} letters)`,
+  removeAdsButton: "Remove ads",
+  removeAdsButtonBuying: "Redirecting to MercadoPago...",
   whatIsTitle: "What is Letris?",
   whatIsBody: "Letris is a letter Tetris. Each piece falls with one letter per block, and as pieces stack up they form a word search grid. Unlike classic Tetris, full lines don't clear on their own: you have to find words by swiping across the grid to remove them.",
   howToPlayTitle: "How to play?",
@@ -171,6 +177,8 @@ const pt: Translation = {
   recordScoreCaption: (score) => `${score} pontos`,
   recordWordsCaption: (n) => `Mais palavras em uma partida: ${n}`,
   recordLongestWordCaption: (word) => `Palavra mais longa: ${word} (${word.length} letras)`,
+  removeAdsButton: "Remover anúncios",
+  removeAdsButtonBuying: "Redirecionando para o MercadoPago...",
   whatIsTitle: "O que é o Letris?",
   whatIsBody: "Letris é um Tetris de letras. Cada peça cai com uma letra por quadrado, e ao se encaixar sobre as outras vai formando um caça-palavras. Diferente do Tetris clássico, as linhas completas não somem sozinhas: você precisa encontrar palavras deslizando o dedo pela grade para eliminá-las.",
   howToPlayTitle: "Como jogar?",
