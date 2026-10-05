@@ -42,6 +42,10 @@ export interface Translation {
   gameOverBody: (score: number) => string;
   playAgainButton: string;
   backToHomeButton: string;
+  continueWithAdButton: string;
+  rewardedAdConfirmButton: string;
+  rewardedAdSkipButton: string;
+  rewardedAdWaitLabel: (seconds: number) => string;
 }
 
 const es: Translation = {
@@ -90,6 +94,10 @@ const es: Translation = {
   gameOverBody: (score) => `Terminaste con ${score} puntos.`,
   playAgainButton: "Jugar de nuevo",
   backToHomeButton: "Volver al inicio",
+  continueWithAdButton: "Mirá un video y seguí jugando",
+  rewardedAdConfirmButton: "Reclamar recompensa",
+  rewardedAdSkipButton: "Cerrar",
+  rewardedAdWaitLabel: (seconds) => `Esperá ${seconds}s...`,
 };
 
 const en: Translation = {
@@ -138,6 +146,10 @@ const en: Translation = {
   gameOverBody: (score) => `You finished with ${score} points.`,
   playAgainButton: "Play again",
   backToHomeButton: "Back to home",
+  continueWithAdButton: "Watch a video and keep playing",
+  rewardedAdConfirmButton: "Claim reward",
+  rewardedAdSkipButton: "Close",
+  rewardedAdWaitLabel: (seconds) => `Wait ${seconds}s...`,
 };
 
 const pt: Translation = {
@@ -186,6 +198,10 @@ const pt: Translation = {
   gameOverBody: (score) => `Você terminou com ${score} pontos.`,
   playAgainButton: "Jogar de novo",
   backToHomeButton: "Voltar ao início",
+  continueWithAdButton: "Assista a um vídeo e continue jogando",
+  rewardedAdConfirmButton: "Resgatar recompensa",
+  rewardedAdSkipButton: "Fechar",
+  rewardedAdWaitLabel: (seconds) => `Espere ${seconds}s...`,
 };
 
 export const translations: Record<SupportedLanguage, Translation> = { es, en, pt };

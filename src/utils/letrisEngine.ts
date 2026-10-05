@@ -144,6 +144,14 @@ export function lockPiece(board: Board, piece: FallingPiece): LockResult {
   return { board: newBoard, gameOver };
 }
 
+// Recompensa de "mirá un video y seguí jugando" tras un game over: en vez
+// de reiniciar del todo, se borra la mitad superior del tablero (deja la
+// mitad inferior intacta) y el juego sigue desde ahí con más aire.
+export function clearTopHalf(board: Board): Board {
+  const half = Math.floor(BOARD_HEIGHT / 2);
+  return board.map((row, r) => (r < half ? Array<BoardCell>(BOARD_WIDTH).fill(null) : [...row]));
+}
+
 // Después de sacar las celdas de una palabra encontrada, cada columna
 // afectada colapsa de forma independiente: las letras de arriba caen para
 // ocupar los huecos, como en un match-3.

@@ -27,10 +27,14 @@ import {
   wordsIntoCurrentLevel,
   wordsRequiredForLevel,
   gravityIntervalMs,
+  clearTopHalf,
 } from "../utils/letrisEngine";
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
 import { collapseColumns } from "../utils/letrisEngine";
 import { maybeSaveRecord } from "../utils/letrisRecordState";
+import { useRewardedAd } from "../ads/useRewardedAd";
+import RewardedAdModal from "../ads/RewardedAdModal";
+import HouseAdBanner from "../ads/HouseAdBanner";
 
 const ACCENT = "#e74c3c";
 const FEEDBACK_DURATION_MS = 1300;
@@ -187,6 +191,29 @@ export default function Game() {
     }, CLEAR_DELAY_MS);
   }
 
+  const {
+    adCreative: continueAdCreative,
+    showingAd: showingContinueAd,
+    canConfirmReward: canConfirmContinue,
+    secondsUntilCanConfirm: continueWaitSeconds,
+    requestAd: requestContinueAd,
+    handleAdWatched: handleContinueAdWatched,
+    handleAdSkipped: handleContinueAdSkipped,
+  } = useRewardedAd(
+    "letris-gameover-rewarded",
+    "letris",
+    currentLanguage,
+    () => {
+      savedRecordRef.current = false;
+      setGameState((prev) => ({
+        board: clearTopHalf(prev.board),
+        fallingPiece: spawnPiece(currentLanguage),
+        phase: "playing",
+      }));
+    },
+    "continue_game",
+  );
+
   function restartGame() {
     if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
     if (clearTimeoutRef.current) clearTimeout(clearTimeoutRef.current);
@@ -221,6 +248,14 @@ export default function Game() {
             <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
           </Box>
 
+          <Button onClick={requestContinueAd} variant="contained" size="large" sx={{
+            backgroundColor: "#4a7c59", color: "#fff", fontWeight: 800, fontSize: 16,
+            py: 1.4, borderRadius: 999, textTransform: "none",
+            "&:hover": { backgroundColor: "#3b6448" },
+          }}>
+            {t.continueWithAdButton}
+          </Button>
+
           <Button onClick={restartGame} variant="contained" size="large" sx={{
             backgroundColor: "#fff", color: ACCENT, fontWeight: 800, fontSize: 18,
             py: 1.6, borderRadius: 999, textTransform: "none",
@@ -231,7 +266,21 @@ export default function Game() {
           <Button onClick={() => navigate("/")} sx={{ color: "#fff", fontSize: 14, fontWeight: 700 }}>
             {t.backToHomeButton}
           </Button>
+
+          <HouseAdBanner slot="letris-gameover-banner" gameSlug="letris" locale={currentLanguage} />
         </Box>
+
+        <RewardedAdModal
+          open={showingContinueAd}
+          adCreative={continueAdCreative}
+          canConfirmReward={canConfirmContinue}
+          secondsUntilCanConfirm={continueWaitSeconds}
+          onConfirm={handleContinueAdWatched}
+          onSkip={handleContinueAdSkipped}
+          confirmLabel={t.rewardedAdConfirmButton}
+          skipLabel={t.rewardedAdSkipButton}
+          waitLabel={t.rewardedAdWaitLabel}
+        />
       </Layout>
     );
   }
@@ -297,6 +346,10 @@ export default function Game() {
           <Button onClick={() => handleMove(1)} sx={controlButtonSx}>
             <ArrowForwardIosRoundedIcon sx={{ fontSize: 24 }} />
           </Button>
+        </Box>
+
+        <Box sx={{ display: "flex", justifyContent: "center", mb: 1 }}>
+          <HouseAdBanner slot="letris-words-banner" gameSlug="letris" locale={currentLanguage} />
         </Box>
 
         <FoundWordsList
