@@ -54,26 +54,33 @@ export function useRewardedAd(
     if (!canShowAd) return;
 
     setLoadingAd(true);
-    const sessionId = getAdSessionId();
-    const { ad, rewardToken: fallbackToken } = await fetchNextAd(slot, locale, sessionId);
-    setLoadingAd(false);
+    try {
+      const sessionId = getAdSessionId();
+      const { ad, rewardToken: fallbackToken } = await fetchNextAd(slot, locale, sessionId);
 
-    // Con creative real el token viaja en ad.rewardToken; sin inventario
-    // (fallback "anunciá acá") viaja suelto en fallbackToken — cualquiera
-    // de los dos alcanza para poder reclamar la recompensa.
-    const token = ad?.rewardToken ?? fallbackToken;
-    if (!token) {
-      // Ni ad real ni fallback: slot mal configurado como no-rewarded.
-      return;
-    }
+      // Con creative real el token viaja en ad.rewardToken; sin inventario
+      // (fallback "anunciá acá") viaja suelto en fallbackToken — cualquiera
+      // de los dos alcanza para poder reclamar la recompensa.
+      const token = ad?.rewardToken ?? fallbackToken;
+      if (!token) {
+        // Ni ad real ni fallback: slot mal configurado como no-rewarded.
+        return;
+      }
 
-    setAdCreative(ad);
-    setRewardToken(token);
-    setShowingAd(true);
-    if (ad) {
-      reportImpression(ad, gameSlug, sessionId, locale).then((id) => {
-        impressionIdRef.current = id;
-      });
+      setAdCreative(ad);
+      setRewardToken(token);
+      setShowingAd(true);
+      if (ad) {
+        reportImpression(ad, gameSlug, sessionId, locale).then((id) => {
+          impressionIdRef.current = id;
+        });
+      }
+    } catch {
+      // Un fallo de red (fetch rechazado, JSON inválido) no debe dejar
+      // loadingAd trabado en true para siempre — sin este finally, canShowAd
+      // queda false y el botón no vuelve a responder hasta recargar la página.
+    } finally {
+      setLoadingAd(false);
     }
   }, [canShowAd, slot, gameSlug, locale]);
 
