@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-05.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-06.
 // Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -6,6 +6,12 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import RewardedFallbackCreative from "./RewardedFallbackCreative";
 import type { AdCreative } from "./types";
+
+// Formato "rewarded": el doble de alto que el banner rectangular (4:1) —
+// ver BANNER_ASPECT_RATIO en HouseAdBanner.tsx. object-fit: cover por el
+// mismo motivo: que cualquier imagen quede recortada a esta proporción en
+// vez de desvirtuar el modal si no viene con la medida exacta.
+const REWARDED_ASPECT_RATIO = "2 / 1";
 
 interface RewardedAdModalProps {
   open: boolean;
@@ -49,10 +55,17 @@ export default function RewardedAdModal({
         }}
       >
         {adCreative ? (
-          <img
+          <Box
+            component="img"
             src={adCreative.assetUrl}
             alt={adCreative.headline ?? "Publicidad"}
-            style={{ display: "block", width: "100%", borderRadius: 8 }}
+            sx={{
+              display: "block",
+              width: "100%",
+              aspectRatio: REWARDED_ASPECT_RATIO,
+              objectFit: "cover",
+              borderRadius: "8px",
+            }}
           />
         ) : (
           <RewardedFallbackCreative />

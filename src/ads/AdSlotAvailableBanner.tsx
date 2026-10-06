@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-05.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-06.
 // Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
@@ -63,7 +63,6 @@ export default function AdSlotAvailableBanner({
         alignItems: "center",
         gap: 1.5,
         width: "100%",
-        maxWidth: 320,
         mx: "auto",
         boxSizing: "border-box",
         minHeight: 80,
