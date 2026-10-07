@@ -1,5 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-06.
-// Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-07.
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 
@@ -17,18 +16,23 @@ const ROTATING_LINES = [
 
 const ROTATE_INTERVAL_MS = 2800;
 const EXIT_DURATION_MS = 500;
-const PRICE_TILES = ["$", "3", ".", "5", "0", "0"];
 const SIGNUP_URL = "https://ads-api.boludeando.com/login";
 
 interface AdSlotAvailableBannerProps {
+  // 1000 = tier "banner" (default, ver adFormats.ts). Pasar 2000 para el
+  // fallback del slot "banner doble". Sin separador de miles en los tiles:
+  // ocupa menos ancho horizontal y deja más lugar al texto rotativo.
+  weeklyPrice?: number;
   accentColor?: string;
   inkColor?: string;
 }
 
 export default function AdSlotAvailableBanner({
+  weeklyPrice = 1000,
   accentColor = "#e74c3c",
   inkColor = "#3a1512",
 }: AdSlotAvailableBannerProps) {
+  const priceTiles = String(weeklyPrice).split("");
   const [index, setIndex] = useState(0);
   const [exitingIndex, setExitingIndex] = useState<number | null>(null);
 
@@ -56,7 +60,7 @@ export default function AdSlotAvailableBanner({
       href={SIGNUP_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Anunciá en este espacio por $3.500 la semana"
+      aria-label={`Anunciá en este espacio por $${weeklyPrice} la semana`}
       sx={{
         position: "relative",
         display: "flex",
@@ -104,7 +108,7 @@ export default function AdSlotAvailableBanner({
                 sx={{
                   position: "absolute",
                   inset: 0,
-                  fontSize: 18,
+                  fontSize: { xs: 14, sm: 16 },
                   lineHeight: "24px",
                   fontWeight: 900,
                   letterSpacing: "-0.01em",
@@ -125,20 +129,20 @@ export default function AdSlotAvailableBanner({
 
       <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
         <Box sx={{ display: "flex", gap: "2px" }}>
-          {PRICE_TILES.map((ch, i) => (
+          {priceTiles.map((ch, i) => (
             <Box
               key={i}
               sx={{
                 display: "grid",
                 placeItems: "center",
-                width: ch === "." ? 7 : 17,
+                width: 15,
                 height: 24,
-                backgroundColor: ch === "." ? "transparent" : accentColor,
-                color: ch === "." ? accentColor : "#fff",
+                backgroundColor: accentColor,
+                color: "#fff",
                 borderRadius: "5px",
                 fontWeight: 900,
-                fontSize: 15,
-                boxShadow: ch === "." ? "none" : "inset 0 -3px 0 rgba(0,0,0,0.18)",
+                fontSize: 14,
+                boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
               }}
             >
               {ch}

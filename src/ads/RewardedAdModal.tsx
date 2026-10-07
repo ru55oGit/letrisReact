@@ -7,12 +7,6 @@ import Button from "@mui/material/Button";
 import RewardedFallbackCreative from "./RewardedFallbackCreative";
 import type { AdCreative } from "./types";
 
-// Formato "rewarded": el doble de alto que el banner rectangular (4:1) —
-// ver BANNER_ASPECT_RATIO en HouseAdBanner.tsx. object-fit: cover por el
-// mismo motivo: que cualquier imagen quede recortada a esta proporción en
-// vez de desvirtuar el modal si no viene con la medida exacta.
-const REWARDED_ASPECT_RATIO = "2 / 1";
-
 interface RewardedAdModalProps {
   open: boolean;
   adCreative: AdCreative | null;
@@ -36,6 +30,67 @@ export default function RewardedAdModal({
   skipLabel,
   waitLabel,
 }: RewardedAdModalProps) {
+  // "rewarded full screen" es el único producto que se vende para este
+  // slot (ver migrations/0003_ad_format.sql) — cualquier creative real
+  // (adCreative no null) ocupa toda la pantalla. El fallback gratuito
+  // "anunciá acá" (adCreative null) se queda en la card chica de siempre.
+  const fullScreen = Boolean(adCreative);
+
+  const actions = (
+    <>
+      <Button
+        variant="contained"
+        fullWidth
+        disabled={!canConfirmReward}
+        onClick={onConfirm}
+        sx={{ mt: fullScreen ? 0 : 2, mb: 1, backgroundColor: "#4a7c59", "&:hover": { backgroundColor: "#3b6448" } }}
+      >
+        {canConfirmReward ? confirmLabel : waitLabel(secondsUntilCanConfirm)}
+      </Button>
+
+      <Typography
+        component="button"
+        onClick={onSkip}
+        sx={{
+          color: "#999",
+          fontSize: 13,
+          background: "none",
+          border: "none",
+          cursor: "pointer",
+          textDecoration: "underline",
+        }}
+      >
+        {skipLabel}
+      </Typography>
+    </>
+  );
+
+  if (fullScreen) {
+    return (
+      <Modal open={open} onClose={onSkip} aria-labelledby="rewarded-ad-title">
+        <Box
+          sx={{
+            position: "fixed",
+            inset: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "#000",
+            display: "flex",
+            flexDirection: "column",
+          }}
+        >
+          <Box
+            component="img"
+            src={adCreative!.assetUrl}
+            alt={adCreative!.headline ?? "Publicidad"}
+            sx={{ display: "block", width: "100%", flex: 1, minHeight: 0, objectFit: "cover" }}
+          />
+          <Box sx={{ backgroundColor: "#fff", p: 2, textAlign: "center" }}>{actions}</Box>
+        </Box>
+      </Modal>
+    );
+  }
+
   return (
     <Modal open={open} onClose={onSkip} aria-labelledby="rewarded-ad-title">
       <Box
@@ -54,47 +109,8 @@ export default function RewardedAdModal({
           boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
         }}
       >
-        {adCreative ? (
-          <Box
-            component="img"
-            src={adCreative.assetUrl}
-            alt={adCreative.headline ?? "Publicidad"}
-            sx={{
-              display: "block",
-              width: "100%",
-              aspectRatio: REWARDED_ASPECT_RATIO,
-              objectFit: "cover",
-              borderRadius: "8px",
-            }}
-          />
-        ) : (
-          <RewardedFallbackCreative />
-        )}
-
-        <Button
-          variant="contained"
-          fullWidth
-          disabled={!canConfirmReward}
-          onClick={onConfirm}
-          sx={{ mt: 2, mb: 1, backgroundColor: "#4a7c59", "&:hover": { backgroundColor: "#3b6448" } }}
-        >
-          {canConfirmReward ? confirmLabel : waitLabel(secondsUntilCanConfirm)}
-        </Button>
-
-        <Typography
-          component="button"
-          onClick={onSkip}
-          sx={{
-            color: "#999",
-            fontSize: 13,
-            background: "none",
-            border: "none",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-        >
-          {skipLabel}
-        </Typography>
+        <RewardedFallbackCreative />
+        {actions}
       </Box>
     </Modal>
   );

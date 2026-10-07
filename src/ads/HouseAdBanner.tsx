@@ -1,5 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/HouseAdBanner.tsx el 2026-10-06.
-// Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/HouseAdBanner.tsx el 2026-10-07.
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { fetchNextAd, reportImpression, reportClick } from "./adClient";
@@ -11,17 +10,37 @@ interface HouseAdBannerProps {
   slot: string;
   gameSlug: string;
   locale: string;
+  // Formato que este slot está pensado para vender — no hay forma de saberlo
+  // leyendo la respuesta de /ads/next cuando no hay ninguna creativa real
+  // (ad === null), así que hay que declararlo en el call-site. Solo cambia
+  // qué fallback de "este lugar está libre" se muestra (precio); una vez que
+  // hay un ad real, el aspect-ratio ya se decide por ad.adFormat más arriba.
+  format?: "banner" | "banner_double";
 }
 
-// Formato "banner" (house/sold): rectangular, 4:1. El otro formato de la
-// hub es "rewarded" (ver RewardedAdModal), el doble de alto — 2:1. 100% del
-// ancho disponible del contenedor (que ya trae el padding del juego) en vez
-// de un ancho fijo, con object-fit: cover para que cualquier imagen que
-// suba un anunciante quede recortada a esta proporción en vez de desvirtuar
-// el layout si no viene con la medida exacta.
-export const BANNER_ASPECT_RATIO = "4 / 1";
+const FALLBACK_WEEKLY_PRICE: Record<"banner" | "banner_double", number> = {
+  banner: 1000,
+  banner_double: 2000,
+};
 
-export default function HouseAdBanner({ slot, gameSlug, locale }: HouseAdBannerProps) {
+// 3 formatos de campaña pagos (ver migrations/0003_ad_format.sql): "banner"
+// rectangular 4:1, "banner_double" el doble de alto 2:1, y "rewarded"
+// pantalla completa (ese no pasa por acá, ver RewardedAdModal). HouseAdBanner
+// sirve los dos primeros — la relación de aspecto se decide según el
+// ad_format real de la creatividad ganadora, no un valor fijo por slot,
+// porque un mismo slot 'sold' puede recibir tanto banners simples como
+// dobles. 100% del ancho disponible del contenedor (que ya trae el padding
+// del juego) en vez de un ancho fijo, con object-fit: cover para que
+// cualquier imagen que suba un anunciante quede recortada a la proporción
+// correcta en vez de desvirtuar el layout si no viene con la medida exacta.
+export const BANNER_ASPECT_RATIO = "4 / 1";
+export const BANNER_DOUBLE_ASPECT_RATIO = "2 / 1";
+
+function aspectRatioFor(adFormat: string | undefined): string {
+  return adFormat === "banner_double" ? BANNER_DOUBLE_ASPECT_RATIO : BANNER_ASPECT_RATIO;
+}
+
+export default function HouseAdBanner({ slot, gameSlug, locale, format = "banner" }: HouseAdBannerProps) {
   const [ad, setAd] = useState<AdCreative | null>(null);
   // null = todavía no respondió la API; false = no hay nada que mostrar
   // (ni siquiera el fallback, ver "ad_free" abajo).
@@ -51,7 +70,7 @@ export default function HouseAdBanner({ slot, gameSlug, locale }: HouseAdBannerP
     };
   }, [slot, gameSlug, locale]);
 
-  if (!ad) return showFallback ? <AdSlotAvailableBanner /> : null;
+  if (!ad) return showFallback ? <AdSlotAvailableBanner weeklyPrice={FALLBACK_WEEKLY_PRICE[format]} /> : null;
 
   return (
     <Box
@@ -63,7 +82,7 @@ export default function HouseAdBanner({ slot, gameSlug, locale }: HouseAdBannerP
       sx={{
         display: "block",
         width: "100%",
-        aspectRatio: BANNER_ASPECT_RATIO,
+        aspectRatio: aspectRatioFor(ad.adFormat),
         mx: "auto",
         borderRadius: 2,
         overflow: "hidden",
