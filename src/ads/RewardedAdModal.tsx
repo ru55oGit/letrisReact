@@ -1,5 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-06.
-// Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-08.
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -68,24 +67,52 @@ export default function RewardedAdModal({
   if (fullScreen) {
     return (
       <Modal open={open} onClose={onSkip} aria-labelledby="rewarded-ad-title">
+        {/* position:fixed + inset:0 solo (sin width/height en vh) sigue el viewport
+            visual real del navegador — con height:100vh explícito, en mobile (barra
+            de direcciones que aparece/desaparece) el botón de abajo quedaba tapado. */}
         <Box
           sx={{
             position: "fixed",
             inset: 0,
-            width: "100vw",
-            height: "100vh",
             backgroundColor: "#000",
             display: "flex",
             flexDirection: "column",
           }}
         >
+          {/* Las creatividades rewarded se piden en formato vertical, estilo
+              celular (ver adFormats.ts, 1080×1920 9:16). En desktop, forzarlas a
+              cubrir todo el ancho de una ventana apaisada las recorta muchísimo
+              (object-fit:cover escala hasta tapar el ancho y se come casi todo el
+              alto) — se las limita a un ancho de celular centrado, con el resto
+              de la pantalla en negro a los costados, como un interstitial real. */}
           <Box
-            component="img"
-            src={adCreative!.assetUrl}
-            alt={adCreative!.headline ?? "Publicidad"}
-            sx={{ display: "block", width: "100%", flex: 1, minHeight: 0, objectFit: "cover" }}
-          />
-          <Box sx={{ backgroundColor: "#fff", p: 2, textAlign: "center" }}>{actions}</Box>
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              width: "100%",
+              maxWidth: { xs: "100%", sm: 480 },
+              height: "100%",
+              mx: "auto",
+            }}
+          >
+            <Box
+              component="img"
+              src={adCreative!.assetUrl}
+              alt={adCreative!.headline ?? "Publicidad"}
+              sx={{ display: "block", width: "100%", flex: 1, minHeight: 0, objectFit: "cover" }}
+            />
+            <Box
+              sx={{
+                backgroundColor: "#fff",
+                p: 2,
+                pb: "calc(16px + env(safe-area-inset-bottom))",
+                textAlign: "center",
+                flexShrink: 0,
+              }}
+            >
+              {actions}
+            </Box>
+          </Box>
         </Box>
       </Modal>
     );
