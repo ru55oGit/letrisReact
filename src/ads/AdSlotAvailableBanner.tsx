@@ -23,22 +23,17 @@ interface AdSlotAvailableBannerProps {
   // fallback del slot "banner doble". Sin separador de miles en los tiles:
   // ocupa menos ancho horizontal y deja más lugar al texto rotativo.
   weeklyPrice?: number;
-  // true para el fallback del slot "banner doble" — el alto (y el resto de
-  // las medidas internas) se duplica para que no "salte" de tamaño cuando
-  // una campaña real reemplaza el fallback (HouseAdBanner renderiza esa
-  // campaña a aspectRatio 2:1, el doble de alto que el banner simple 4:1).
+  // true para el fallback del slot "banner doble" — layout vertical propio
+  // (no la misma fila horizontal estirada), porque una campaña real ahí se
+  // renderiza a aspect-ratio 2:1 (HouseAdBanner), el doble de alto que el
+  // banner simple 4:1, y una fila horizontal centrada en una caja el doble
+  // de alta deja la mitad del espacio vacío arriba/abajo sin usar.
   double?: boolean;
   accentColor?: string;
   inkColor?: string;
 }
 
-export default function AdSlotAvailableBanner({
-  weeklyPrice = 1000,
-  double = false,
-  accentColor = "#e74c3c",
-  inkColor = "#3a1512",
-}: AdSlotAvailableBannerProps) {
-  const priceTiles = String(weeklyPrice).split("");
+function useRotatingLine() {
   const [index, setIndex] = useState(0);
   const [exitingIndex, setExitingIndex] = useState<number | null>(null);
 
@@ -58,7 +53,153 @@ export default function AdSlotAvailableBanner({
     return () => clearTimeout(clear);
   }, [exitingIndex]);
 
+  return { index, exitingIndex };
+}
+
+export default function AdSlotAvailableBanner({
+  weeklyPrice = 1000,
+  double = false,
+  accentColor = "#e74c3c",
+  inkColor = "#3a1512",
+}: AdSlotAvailableBannerProps) {
+  const priceTiles = String(weeklyPrice).split("");
+  const { index, exitingIndex } = useRotatingLine();
   const paper = "#fff8f3";
+  const ariaLabel = `Anunciá en este espacio por $${weeklyPrice} la semana`;
+
+  if (double) {
+    // Layout vertical en 3 filas (kicker / texto rotativo a 2 líneas /
+    // precio + flecha), con justify-content:space-between para que la
+    // altura extra se reparta entre las 3 en vez de quedar como padding
+    // muerto arriba y abajo de una sola fila centrada.
+    return (
+      <Box
+        component="a"
+        href={SIGNUP_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label={ariaLabel}
+        sx={{
+          position: "relative",
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          gap: 1,
+          width: "100%",
+          mx: "auto",
+          boxSizing: "border-box",
+          minHeight: 160,
+          p: "18px 20px",
+          backgroundColor: paper,
+          borderRadius: "24px",
+          textDecoration: "none",
+          color: inkColor,
+          overflow: "hidden",
+          isolation: "isolate",
+          transition: "transform 0.15s ease",
+          "&:hover": { transform: "translateY(-1px)" },
+          "&:active": { transform: "scale(0.985)" },
+          "&::before": {
+            content: '""',
+            position: "absolute",
+            inset: "5px",
+            borderRadius: "19px",
+            border: `2px dashed ${accentColor}73`,
+            pointerEvents: "none",
+            zIndex: -1,
+          },
+        }}
+      >
+        <Box component="span" sx={{ fontSize: 13, fontWeight: 700, color: `${inkColor}99` }}>
+          Este lugar está libre
+        </Box>
+
+        <Box sx={{ position: "relative", height: 48, overflow: "hidden" }}>
+          {ROTATING_LINES.map((line, i) => {
+            const isIn = i === index;
+            const isOut = i === exitingIndex;
+            return (
+              <Box
+                key={line}
+                sx={{
+                  position: "absolute",
+                  inset: 0,
+                  fontSize: 18,
+                  lineHeight: "24px",
+                  fontWeight: 900,
+                  letterSpacing: "-0.01em",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: "vertical",
+                  overflow: "hidden",
+                  transform: isIn ? "translateY(0)" : isOut ? "translateY(-110%)" : "translateY(110%)",
+                  opacity: isIn ? 1 : 0,
+                  transition: "transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.3s",
+                }}
+              >
+                {line}
+              </Box>
+            );
+          })}
+        </Box>
+
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+            <Box sx={{ display: "flex", gap: "3px" }}>
+              {priceTiles.map((ch, i) => (
+                <Box
+                  key={i}
+                  sx={{
+                    display: "grid",
+                    placeItems: "center",
+                    width: 22,
+                    height: 30,
+                    backgroundColor: accentColor,
+                    color: "#fff",
+                    borderRadius: "6px",
+                    fontWeight: 900,
+                    fontSize: 17,
+                    boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
+                  }}
+                >
+                  {ch}
+                </Box>
+              ))}
+            </Box>
+            <Box component="span" sx={{ fontSize: 12, fontWeight: 800, color: accentColor }}>
+              por semana
+            </Box>
+          </Box>
+
+          <Box
+            sx={{
+              flexShrink: 0,
+              display: "grid",
+              placeItems: "center",
+              width: 48,
+              height: 48,
+              borderRadius: "50%",
+              backgroundColor: inkColor,
+              color: paper,
+            }}
+          >
+            <svg
+              viewBox="0 0 24 24"
+              width={22}
+              height={22}
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={3}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M5 12h14M13 6l6 6-6 6" />
+            </svg>
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box
@@ -66,19 +207,19 @@ export default function AdSlotAvailableBanner({
       href={SIGNUP_URL}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label={`Anunciá en este espacio por $${weeklyPrice} la semana`}
+      aria-label={ariaLabel}
       sx={{
         position: "relative",
         display: "flex",
         alignItems: "center",
-        gap: double ? 2.5 : 1.5,
+        gap: 1.5,
         width: "100%",
         mx: "auto",
         boxSizing: "border-box",
-        minHeight: double ? 160 : 80,
-        p: double ? "20px 20px 20px 24px" : "12px 12px 12px 16px",
+        minHeight: 80,
+        p: "12px 12px 12px 16px",
         backgroundColor: paper,
-        borderRadius: double ? "28px" : "20px",
+        borderRadius: "20px",
         textDecoration: "none",
         color: inkColor,
         overflow: "hidden",
@@ -90,7 +231,7 @@ export default function AdSlotAvailableBanner({
           content: '""',
           position: "absolute",
           inset: "5px",
-          borderRadius: double ? "22px" : "15px",
+          borderRadius: "15px",
           border: `2px dashed ${accentColor}73`,
           pointerEvents: "none",
           zIndex: -1,
@@ -100,11 +241,11 @@ export default function AdSlotAvailableBanner({
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box
           component="span"
-          sx={{ display: "block", fontSize: double ? 14 : 12, fontWeight: 700, color: `${inkColor}99`, mb: double ? 0.75 : 0.25 }}
+          sx={{ display: "block", fontSize: 12, fontWeight: 700, color: `${inkColor}99`, mb: 0.25 }}
         >
           Este lugar está libre
         </Box>
-        <Box sx={{ position: "relative", height: double ? 32 : 24, overflow: "hidden" }}>
+        <Box sx={{ position: "relative", height: 24, overflow: "hidden" }}>
           {ROTATING_LINES.map((line, i) => {
             const isIn = i === index;
             const isOut = i === exitingIndex;
@@ -114,8 +255,8 @@ export default function AdSlotAvailableBanner({
                 sx={{
                   position: "absolute",
                   inset: 0,
-                  fontSize: double ? { xs: 18, sm: 22 } : { xs: 14, sm: 16 },
-                  lineHeight: double ? "32px" : "24px",
+                  fontSize: { xs: 14, sm: 16 },
+                  lineHeight: "24px",
                   fontWeight: 900,
                   letterSpacing: "-0.01em",
                   whiteSpace: "nowrap",
@@ -133,21 +274,21 @@ export default function AdSlotAvailableBanner({
         </Box>
       </Box>
 
-      <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: double ? 1 : 0.5 }}>
-        <Box sx={{ display: "flex", gap: double ? "3px" : "2px" }}>
+      <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
+        <Box sx={{ display: "flex", gap: "2px" }}>
           {priceTiles.map((ch, i) => (
             <Box
               key={i}
               sx={{
                 display: "grid",
                 placeItems: "center",
-                width: double ? 22 : 15,
-                height: double ? 34 : 24,
+                width: 15,
+                height: 24,
                 backgroundColor: accentColor,
                 color: "#fff",
-                borderRadius: double ? "7px" : "5px",
+                borderRadius: "5px",
                 fontWeight: 900,
-                fontSize: double ? 20 : 14,
+                fontSize: 14,
                 boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
               }}
             >
@@ -155,7 +296,7 @@ export default function AdSlotAvailableBanner({
             </Box>
           ))}
         </Box>
-        <Box component="span" sx={{ fontSize: double ? 13 : 11, fontWeight: 800, color: accentColor }}>
+        <Box component="span" sx={{ fontSize: 11, fontWeight: 800, color: accentColor }}>
           por semana
         </Box>
       </Box>
@@ -165,8 +306,8 @@ export default function AdSlotAvailableBanner({
           flexShrink: 0,
           display: "grid",
           placeItems: "center",
-          width: double ? 56 : 40,
-          height: double ? 56 : 40,
+          width: 40,
+          height: 40,
           borderRadius: "50%",
           backgroundColor: inkColor,
           color: paper,
@@ -175,8 +316,8 @@ export default function AdSlotAvailableBanner({
       >
         <svg
           viewBox="0 0 24 24"
-          width={double ? 26 : 18}
-          height={double ? 26 : 18}
+          width={18}
+          height={18}
           fill="none"
           stroke="currentColor"
           strokeWidth={3}
