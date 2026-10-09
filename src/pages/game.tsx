@@ -194,6 +194,8 @@ export default function Game() {
   const {
     adCreative: continueAdCreative,
     showingAd: showingContinueAd,
+    canShowAd: canShowContinueAd,
+    loadingAd: loadingContinueAd,
     canConfirmReward: canConfirmContinue,
     secondsUntilCanConfirm: continueWaitSeconds,
     requestAd: requestContinueAd,
@@ -249,12 +251,19 @@ export default function Game() {
             <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
           </Box>
 
-          <Button onClick={requestContinueAd} variant="contained" size="large" sx={{
-            backgroundColor: "#4a7c59", color: "#fff", fontWeight: 800, fontSize: 16,
-            py: 1.4, borderRadius: 999, textTransform: "none",
-            "&:hover": { backgroundColor: "#3b6448" },
-          }}>
-            {t.continueWithAdButton}
+          <Button
+            onClick={requestContinueAd}
+            disabled={!canShowContinueAd}
+            variant="contained"
+            size="large"
+            sx={{
+              backgroundColor: "#f0b429", color: "#1a1a1a", fontWeight: 800, fontSize: 16,
+              py: 1.4, borderRadius: 999, textTransform: "none",
+              "&:hover": { backgroundColor: "#d99f1a" },
+              "&.Mui-disabled": { backgroundColor: "rgba(240,180,41,0.35)", color: "rgba(26,26,26,0.5)" },
+            }}
+          >
+            {loadingContinueAd ? "..." : t.continueWithAdButton}
           </Button>
 
           <Button onClick={restartGame} variant="contained" size="large" sx={{
