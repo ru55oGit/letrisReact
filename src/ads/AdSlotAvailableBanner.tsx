@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-07.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-09.
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 
@@ -23,12 +23,18 @@ interface AdSlotAvailableBannerProps {
   // fallback del slot "banner doble". Sin separador de miles en los tiles:
   // ocupa menos ancho horizontal y deja más lugar al texto rotativo.
   weeklyPrice?: number;
+  // true para el fallback del slot "banner doble" — el alto (y el resto de
+  // las medidas internas) se duplica para que no "salte" de tamaño cuando
+  // una campaña real reemplaza el fallback (HouseAdBanner renderiza esa
+  // campaña a aspectRatio 2:1, el doble de alto que el banner simple 4:1).
+  double?: boolean;
   accentColor?: string;
   inkColor?: string;
 }
 
 export default function AdSlotAvailableBanner({
   weeklyPrice = 1000,
+  double = false,
   accentColor = "#e74c3c",
   inkColor = "#3a1512",
 }: AdSlotAvailableBannerProps) {
@@ -65,14 +71,14 @@ export default function AdSlotAvailableBanner({
         position: "relative",
         display: "flex",
         alignItems: "center",
-        gap: 1.5,
+        gap: double ? 2.5 : 1.5,
         width: "100%",
         mx: "auto",
         boxSizing: "border-box",
-        minHeight: 80,
-        p: "12px 12px 12px 16px",
+        minHeight: double ? 160 : 80,
+        p: double ? "20px 20px 20px 24px" : "12px 12px 12px 16px",
         backgroundColor: paper,
-        borderRadius: "20px",
+        borderRadius: double ? "28px" : "20px",
         textDecoration: "none",
         color: inkColor,
         overflow: "hidden",
@@ -84,7 +90,7 @@ export default function AdSlotAvailableBanner({
           content: '""',
           position: "absolute",
           inset: "5px",
-          borderRadius: "15px",
+          borderRadius: double ? "22px" : "15px",
           border: `2px dashed ${accentColor}73`,
           pointerEvents: "none",
           zIndex: -1,
@@ -94,11 +100,11 @@ export default function AdSlotAvailableBanner({
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box
           component="span"
-          sx={{ display: "block", fontSize: 12, fontWeight: 700, color: `${inkColor}99`, mb: 0.25 }}
+          sx={{ display: "block", fontSize: double ? 14 : 12, fontWeight: 700, color: `${inkColor}99`, mb: double ? 0.75 : 0.25 }}
         >
           Este lugar está libre
         </Box>
-        <Box sx={{ position: "relative", height: 24, overflow: "hidden" }}>
+        <Box sx={{ position: "relative", height: double ? 32 : 24, overflow: "hidden" }}>
           {ROTATING_LINES.map((line, i) => {
             const isIn = i === index;
             const isOut = i === exitingIndex;
@@ -108,8 +114,8 @@ export default function AdSlotAvailableBanner({
                 sx={{
                   position: "absolute",
                   inset: 0,
-                  fontSize: { xs: 14, sm: 16 },
-                  lineHeight: "24px",
+                  fontSize: double ? { xs: 18, sm: 22 } : { xs: 14, sm: 16 },
+                  lineHeight: double ? "32px" : "24px",
                   fontWeight: 900,
                   letterSpacing: "-0.01em",
                   whiteSpace: "nowrap",
@@ -127,21 +133,21 @@ export default function AdSlotAvailableBanner({
         </Box>
       </Box>
 
-      <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
-        <Box sx={{ display: "flex", gap: "2px" }}>
+      <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: double ? 1 : 0.5 }}>
+        <Box sx={{ display: "flex", gap: double ? "3px" : "2px" }}>
           {priceTiles.map((ch, i) => (
             <Box
               key={i}
               sx={{
                 display: "grid",
                 placeItems: "center",
-                width: 15,
-                height: 24,
+                width: double ? 22 : 15,
+                height: double ? 34 : 24,
                 backgroundColor: accentColor,
                 color: "#fff",
-                borderRadius: "5px",
+                borderRadius: double ? "7px" : "5px",
                 fontWeight: 900,
-                fontSize: 14,
+                fontSize: double ? 20 : 14,
                 boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
               }}
             >
@@ -149,7 +155,7 @@ export default function AdSlotAvailableBanner({
             </Box>
           ))}
         </Box>
-        <Box component="span" sx={{ fontSize: 11, fontWeight: 800, color: accentColor }}>
+        <Box component="span" sx={{ fontSize: double ? 13 : 11, fontWeight: 800, color: accentColor }}>
           por semana
         </Box>
       </Box>
@@ -159,8 +165,8 @@ export default function AdSlotAvailableBanner({
           flexShrink: 0,
           display: "grid",
           placeItems: "center",
-          width: 40,
-          height: 40,
+          width: double ? 56 : 40,
+          height: double ? 56 : 40,
           borderRadius: "50%",
           backgroundColor: inkColor,
           color: paper,
@@ -169,8 +175,8 @@ export default function AdSlotAvailableBanner({
       >
         <svg
           viewBox="0 0 24 24"
-          width={18}
-          height={18}
+          width={double ? 26 : 18}
+          height={double ? 26 : 18}
           fill="none"
           stroke="currentColor"
           strokeWidth={3}
