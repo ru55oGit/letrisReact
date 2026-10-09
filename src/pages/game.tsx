@@ -199,6 +199,7 @@ export default function Game() {
     requestAd: requestContinueAd,
     handleAdWatched: handleContinueAdWatched,
     handleAdSkipped: handleContinueAdSkipped,
+    handleImageClick: handleContinueImageClick,
   } = useRewardedAd(
     "letris-gameover-rewarded",
     "letris",
@@ -277,6 +278,7 @@ export default function Game() {
           secondsUntilCanConfirm={continueWaitSeconds}
           onConfirm={handleContinueAdWatched}
           onSkip={handleContinueAdSkipped}
+          onImageClick={handleContinueImageClick}
           confirmLabel={t.rewardedAdConfirmButton}
           skipLabel={t.rewardedAdSkipButton}
           waitLabel={t.rewardedAdWaitLabel}

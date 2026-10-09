@@ -1,7 +1,6 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/useRewardedAd.ts el 2026-10-05.
-// Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/useRewardedAd.ts el 2026-10-08.
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchNextAd, reportImpression, reportReward } from "./adClient";
+import { fetchNextAd, reportImpression, reportReward, reportClick } from "./adClient";
 import { getAdSessionId } from "./adSessionId";
 import { getCooldownRemainingSeconds, setCooldown } from "./adFrequencyCap";
 import type { AdCreative } from "./types";
@@ -106,6 +105,13 @@ export function useRewardedAd(
     resetAfterAd();
   }, [resetAfterAd]);
 
+  // La imagen/video del creative también es clickeable (va al clickUrl del
+  // anunciante, como cualquier banner) — esto solo reporta la métrica, la
+  // navegación la hace el <a href> en RewardedAdModal.
+  const handleImageClick = useCallback(() => {
+    reportClick(impressionIdRef.current);
+  }, []);
+
   return {
     loadingAd,
     adCreative,
@@ -116,5 +122,6 @@ export function useRewardedAd(
     requestAd,
     handleAdWatched,
     handleAdSkipped,
+    handleImageClick,
   };
 }

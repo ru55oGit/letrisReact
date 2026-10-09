@@ -13,6 +13,7 @@ interface RewardedAdModalProps {
   secondsUntilCanConfirm: number;
   onConfirm: () => void;
   onSkip: () => void;
+  onImageClick: () => void;
   confirmLabel: string;
   skipLabel: string;
   waitLabel: (seconds: number) => string;
@@ -25,6 +26,7 @@ export default function RewardedAdModal({
   secondsUntilCanConfirm,
   onConfirm,
   onSkip,
+  onImageClick,
   confirmLabel,
   skipLabel,
   waitLabel,
@@ -95,12 +97,23 @@ export default function RewardedAdModal({
               mx: "auto",
             }}
           >
+            {/* El creative también es clickeable (va al clickUrl del anunciante,
+                como cualquier banner) — antes no tenía ni href ni onClick. */}
             <Box
-              component="img"
-              src={adCreative!.assetUrl}
-              alt={adCreative!.headline ?? "Publicidad"}
-              sx={{ display: "block", width: "100%", flex: 1, minHeight: 0, objectFit: "cover" }}
-            />
+              component="a"
+              href={adCreative!.clickUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={onImageClick}
+              sx={{ display: "block", flex: 1, minHeight: 0 }}
+            >
+              <Box
+                component="img"
+                src={adCreative!.assetUrl}
+                alt={adCreative!.headline ?? "Publicidad"}
+                sx={{ display: "block", width: "100%", height: "100%", objectFit: "cover" }}
+              />
+            </Box>
             <Box
               sx={{
                 backgroundColor: "#fff",
