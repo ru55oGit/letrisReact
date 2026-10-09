@@ -9,6 +9,7 @@ import AdsenseScript from "../components/AdsenseScript";
 import LanguageSelector from "../components/LanguageSelector";
 import HowToPlayDemo from "../components/HowToPlayDemo";
 import { isAdFree, purchaseAdFree, syncAdFreeAfterReturn } from "../ads/adFreeEntitlement";
+import HouseAdBanner from "../ads/HouseAdBanner";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getRecord, LetrisRecord } from "../utils/letrisRecordState";
 import { getDaysSinceLastPlayed } from "../utils/lastPlayedState";
@@ -144,6 +145,15 @@ export default function Home() {
             </Button>
           </Box>
         </Box>
+
+        {!adFree && (
+          <HouseAdBanner
+            slot="letris-home-double-banner"
+            gameSlug="letris"
+            locale={currentLanguage}
+            format="banner_double"
+          />
+        )}
 
         {/* Récord — box separado, como "Mejor Racha" en Enganchalo */}
         <Box sx={{ borderRadius: "16px", backgroundColor: "#fff", p: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
