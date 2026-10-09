@@ -1,5 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/adClient.ts el 2026-10-05.
-// Si cambia la API del backend, actualizar acá y en el resto de los juegos a mano.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/adClient.ts el 2026-10-09.
 import type { AdCreative } from "./types";
 
 const API_BASE = "https://ads-api.boludeando.com/api";
@@ -21,11 +20,18 @@ export async function fetchNextAd(
   locale: string,
   sessionId: string,
 ): Promise<NextAdResult> {
-  const params = new URLSearchParams({ slot, locale, session: sessionId });
-  const res = await fetch(`${API_BASE}/ads/next?${params.toString()}`);
-  if (!res.ok) return { ad: null };
-
-  return (await res.json()) as NextAdResult;
+  try {
+    const params = new URLSearchParams({ slot, locale, session: sessionId });
+    const res = await fetch(`${API_BASE}/ads/next?${params.toString()}`);
+    if (!res.ok) return { ad: null };
+    return (await res.json()) as NextAdResult;
+  } catch {
+    // Un fetch() que rechaza (CORS, red caída, lo que sea) no debe dejar al
+    // caller (HouseAdBanner/useRewardedAd) esperando una promesa que nunca
+    // resuelve — sin esto, el .then() nunca corre y ni el fallback de
+    // "anunciá acá" se llega a mostrar, queda un hueco en blanco.
+    return { ad: null };
+  }
 }
 
 export async function reportImpression(
