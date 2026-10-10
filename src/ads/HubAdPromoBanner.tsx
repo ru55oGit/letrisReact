@@ -11,7 +11,15 @@ import Box from "@mui/material/Box";
 //
 // es/en/pt — mismo alcance que adFallbackCopy.ts en boludeando-ads; fr (el
 // hub soporta es/en/pt/fr, ver LanguageContext.tsx) cae a español por ahora.
-const SIGNUP_URL = "https://ads-api.boludeando.com/login";
+// El ?lang= precarga el idioma objetivo de la campaña en el alta del
+// anunciante (ver Login.tsx/Dashboard.tsx en boludeando-ads) — así alguien
+// que clickea esto mientras juega en portugués puede crear directamente una
+// campaña que solo se le muestre a otros jugadores en portugués, sin tener
+// que ir a buscar esa opción a mano.
+function signupUrl(locale: string | undefined): string {
+  const base = "https://ads-api.boludeando.com/login";
+  return locale ? `${base}?lang=${encodeURIComponent(locale)}` : base;
+}
 
 interface HubAdPromoCopy {
   headline: string;
@@ -155,7 +163,7 @@ export default function HubAdPromoBanner({ locale, accentColor = "#e74c3c", inkC
   return (
     <Box
       component="a"
-      href={SIGNUP_URL}
+      href={signupUrl(locale)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={copy.ariaLabel}

@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-09.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/AdSlotAvailableBanner.tsx el 2026-10-10.
 import { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
 import { getAdFallbackCopy } from "./adFallbackCopy";
@@ -9,7 +9,13 @@ import { getAdFallbackCopy } from "./adFallbackCopy";
 // usuario (banner-anuncia.html), portado a React/MUI acá.
 const ROTATE_INTERVAL_MS = 2800;
 const EXIT_DURATION_MS = 500;
-const SIGNUP_URL = "https://ads-api.boludeando.com/login";
+
+// El ?lang= precarga el idioma objetivo de la campaña en el alta del
+// anunciante (ver Login.tsx/Dashboard.tsx en boludeando-ads).
+function signupUrl(locale: string | undefined): string {
+  const base = "https://ads-api.boludeando.com/login";
+  return locale ? `${base}?lang=${encodeURIComponent(locale)}` : base;
+}
 
 interface AdSlotAvailableBannerProps {
   // 1000 = tier "banner" (default, ver adFormats.ts). Pasar 2000 para el
@@ -78,7 +84,7 @@ export default function AdSlotAvailableBanner({
     return (
       <Box
         component="a"
-        href={SIGNUP_URL}
+        href={signupUrl(locale)}
         target="_blank"
         rel="noopener noreferrer"
         aria-label={ariaLabel}
@@ -207,7 +213,7 @@ export default function AdSlotAvailableBanner({
   return (
     <Box
       component="a"
-      href={SIGNUP_URL}
+      href={signupUrl(locale)}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={ariaLabel}

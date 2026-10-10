@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedFallbackCreative.tsx el 2026-10-09.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedFallbackCreative.tsx el 2026-10-10.
 import Box from "@mui/material/Box";
 import { getAdFallbackCopy } from "./adFallbackCopy";
 
@@ -8,7 +8,12 @@ import { getAdFallbackCopy } from "./adFallbackCopy";
 // mismo. El token de recompensa para este caso lo emite /ads/next con
 // creativeId null — ver api.ts — así que la recompensa real se sigue
 // pudiendo reclamar normalmente.
-const SIGNUP_URL = "https://ads-api.boludeando.com/login";
+// El ?lang= precarga el idioma objetivo de la campaña en el alta del
+// anunciante (ver Login.tsx/Dashboard.tsx en boludeando-ads).
+function signupUrl(locale: string | undefined): string {
+  const base = "https://ads-api.boludeando.com/login";
+  return locale ? `${base}?lang=${encodeURIComponent(locale)}` : base;
+}
 
 interface RewardedFallbackCreativeProps {
   // 3500 = tier "rewarded" (ver adFormats.ts) — es el único formato que
@@ -81,7 +86,7 @@ export default function RewardedFallbackCreative({ weeklyPrice = 3500, locale }:
 
       <Box
         component="a"
-        href={SIGNUP_URL}
+        href={signupUrl(locale)}
         target="_blank"
         rel="noopener noreferrer"
         sx={{
