@@ -10,7 +10,8 @@ import LanguageSelector from "../components/LanguageSelector";
 import HowToPlayDemo from "../components/HowToPlayDemo";
 import { isAdFree, purchaseAdFree, syncAdFreeAfterReturn } from "../ads/adFreeEntitlement";
 import HouseAdBanner from "../ads/HouseAdBanner";
-import AdSlotAvailableBanner from "../ads/AdSlotAvailableBanner";
+import HubAdPromoBanner from "../ads/HubAdPromoBanner";
+import ShareButtons from "../ads/ShareButtons";
 import { useLanguage } from "../i18n/LanguageContext";
 import { getRecord, LetrisRecord } from "../utils/letrisRecordState";
 import { getDaysSinceLastPlayed } from "../utils/lastPlayedState";
@@ -248,8 +249,14 @@ export default function Home() {
         {/* Banner fijo "anunciá acá" — no es un ad_slot real, nunca se
             reemplaza por una campaña comprada. Siempre hay un lugar visible
             para que alguien descubra que puede anunciar, incluso si todos
-            los slots de verdad ya están vendidos (2026-10-09). */}
-        {!adFree && <AdSlotAvailableBanner weeklyPrice={1000} />}
+            los slots de verdad ya están vendidos. Reemplazado por el banner
+            doble del hub (3 precios + URLs rotando) el 2026-10-10. */}
+        {!adFree && (
+          <>
+            <HubAdPromoBanner locale={currentLanguage} />
+            <ShareButtons locale={currentLanguage} />
+          </>
+        )}
       </Box>
 
       <LanguageSelector />
