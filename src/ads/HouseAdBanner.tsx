@@ -72,7 +72,11 @@ export default function HouseAdBanner({ slot, gameSlug, locale, format = "banner
 
   if (!ad)
     return showFallback ? (
-      <AdSlotAvailableBanner weeklyPrice={FALLBACK_WEEKLY_PRICE[format]} double={format === "banner_double"} />
+      <AdSlotAvailableBanner
+        weeklyPrice={FALLBACK_WEEKLY_PRICE[format]}
+        double={format === "banner_double"}
+        locale={locale}
+      />
     ) : null;
 
   return (

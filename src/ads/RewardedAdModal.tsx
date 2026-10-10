@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-08.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/RewardedAdModal.tsx el 2026-10-09.
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -17,6 +17,10 @@ interface RewardedAdModalProps {
   confirmLabel: string;
   skipLabel: string;
   waitLabel: (seconds: number) => string;
+  // es/en/pt — fr/de caen a español por ahora (ver adFallbackCopy.ts).
+  // Solo lo usa el fallback (RewardedFallbackCreative), el creative real
+  // no tiene texto propio que traducir acá.
+  locale?: string;
 }
 
 export default function RewardedAdModal({
@@ -30,6 +34,7 @@ export default function RewardedAdModal({
   confirmLabel,
   skipLabel,
   waitLabel,
+  locale,
 }: RewardedAdModalProps) {
   // "rewarded full screen" es el único producto que se vende para este
   // slot (ver migrations/0003_ad_format.sql) — cualquier creative real
@@ -149,7 +154,7 @@ export default function RewardedAdModal({
           boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
         }}
       >
-        <RewardedFallbackCreative />
+        <RewardedFallbackCreative locale={locale} />
         {actions}
       </Box>
     </Modal>

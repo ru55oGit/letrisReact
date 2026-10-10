@@ -281,6 +281,7 @@ export default function Game() {
         </Box>
 
         <RewardedAdModal
+          locale={currentLanguage}
           open={showingContinueAd}
           adCreative={continueAdCreative}
           canConfirmReward={canConfirmContinue}
