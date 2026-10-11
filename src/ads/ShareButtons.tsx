@@ -1,4 +1,4 @@
-// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/ShareButtons.tsx el 2026-10-10.
+// Copiado de boludeando-ads/sdk/boludeando-ads-client/src/ShareButtons.tsx el 2026-10-11.
 import Box from "@mui/material/Box";
 
 // Solo WhatsApp y Facebook: son las dos redes con un link de "compartir"
@@ -16,9 +16,9 @@ interface ShareCopy {
 }
 
 const COPY: Record<string, ShareCopy> = {
-  es: { label: "Compartí Boludeando", shareText: "Boludeando — Juegos mentales en vez de scroll infinito 🧠" },
-  en: { label: "Share Boludeando", shareText: "Boludeando — Mental games instead of infinite scroll 🧠" },
-  pt: { label: "Compartilhe o Boludeando", shareText: "Boludeando — Jogos mentais em vez de scroll infinito 🧠" },
+  es: { label: "Compartí Boludeando", shareText: "Boludeando — Juegos mentales en vez de scroll infinito" },
+  en: { label: "Share Boludeando", shareText: "Boludeando — Mental games instead of infinite scroll" },
+  pt: { label: "Compartilhe o Boludeando", shareText: "Boludeando — Jogos mentais em vez de scroll infinito" },
 };
 
 function getCopy(locale: string | undefined): ShareCopy {
