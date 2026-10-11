@@ -89,11 +89,11 @@ export default function Home() {
       {showHubHeader && (
         <Box component="header" sx={{
           display: "flex", alignItems: "center",
-          height: 80, px: 2, mt: -2,
+          height: 80, px: 2,
           borderBottom: `2px solid ${ACCENT}`,
           background: "#fff",
           boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          width: "100%", position: "relative", zIndex: 10,
+          width: "100%", position: "fixed", top: 0, left: 0, zIndex: 10,
         }}>
           <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
@@ -112,7 +112,7 @@ export default function Home() {
           </Box>
         </Box>
       )}
-      <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
+      <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pt: showHubHeader ? "80px" : 0, pb: 2, display: "flex", flexDirection: "column", gap: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Typography variant="h2" sx={{
             color: "#fff", fontWeight: 700, letterSpacing: "1px",
