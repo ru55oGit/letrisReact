@@ -95,10 +95,20 @@ export default function Home() {
           boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           width: "100%", position: "relative", zIndex: 10,
         }}>
-          <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center" }}>
+          <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
               <path d="M26 6L14 19L26 32" stroke={ACCENT} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
+          </Box>
+          <Box
+            component="a"
+            href={HUB_URL}
+            sx={{
+              position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)",
+              fontFamily: "Lobster, cursive", fontSize: 28, color: ACCENT, textDecoration: "none",
+            }}
+          >
+            Boludeando
           </Box>
         </Box>
       )}
