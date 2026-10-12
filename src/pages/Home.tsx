@@ -87,28 +87,37 @@ export default function Home() {
     <Layout showFooter>
       <AdsenseScript />
       {showHubHeader && (
-        <Box component="header" sx={{
-          display: "flex", alignItems: "center",
-          height: 80, px: 2,
-          borderBottom: `2px solid ${ACCENT}`,
-          background: "#fff",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          width: { xs: "100%", md: "480px" }, position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 10,
-        }}>
-          <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
-            <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
-              <path d="M26 6L14 19L26 32" stroke={ACCENT} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          </Box>
-          <Box
-            component="a"
-            href={HUB_URL}
-            sx={{
-              position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)",
-              fontFamily: "Lobster, cursive", fontSize: 28, color: ACCENT, textDecoration: "none",
-            }}
-          >
-            Boludeando
+        // Shell fijo a todo el ancho del viewport (sin estilo propio) que
+        // centra con flexbox el header real de 480px adentro — más robusto
+        // que left:50%+transform. boxSizing:border-box en el header es
+        // necesario para que el px:2 (padding) no se sume por fuera del
+        // width:480px (encontrado en emojinaloReact: sin esto el header
+        // termina ~32px más ancho que la columna de contenido).
+        <Box sx={{ position: "fixed", top: 0, left: 0, width: "100%", zIndex: 10, display: "flex", justifyContent: "center" }}>
+          <Box component="header" sx={{
+            display: "flex", alignItems: "center",
+            height: 80, px: 2,
+            boxSizing: "border-box",
+            borderBottom: `2px solid ${ACCENT}`,
+            background: "#fff",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
+            width: { xs: "100%", md: "480px" }, position: "relative",
+          }}>
+            <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
+              <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+                <path d="M26 6L14 19L26 32" stroke={ACCENT} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </Box>
+            <Box
+              component="a"
+              href={HUB_URL}
+              sx={{
+                position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)",
+                fontFamily: "Lobster, cursive", fontSize: 28, color: ACCENT, textDecoration: "none",
+              }}
+            >
+              Boludeando
+            </Box>
           </Box>
         </Box>
       )}
