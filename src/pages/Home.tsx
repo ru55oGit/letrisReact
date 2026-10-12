@@ -93,7 +93,7 @@ export default function Home() {
           borderBottom: `2px solid ${ACCENT}`,
           background: "#fff",
           boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-          width: "100%", position: "fixed", top: 0, left: 0, zIndex: 10,
+          width: { xs: "100%", md: "480px" }, position: "fixed", top: 0, left: "50%", transform: "translateX(-50%)", zIndex: 10,
         }}>
           <Box component="a" href={HUB_URL} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
