@@ -40,6 +40,17 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({
     useState<SupportedLanguage>("es");
 
   useEffect(() => {
+    // El hub pasa el idioma elegido por query param al linkear a cada
+    // juego (?lang=xx) — tiene prioridad sobre lo guardado localmente.
+    const urlLang = new URLSearchParams(window.location.search).get(
+      "lang",
+    ) as SupportedLanguage | null;
+    if (urlLang && translations[urlLang]) {
+      setCurrentLanguage(urlLang);
+      localStorage.setItem(LANGUAGE_STORAGE_KEY, urlLang);
+      return;
+    }
+
     const savedLanguage = localStorage.getItem(
       LANGUAGE_STORAGE_KEY,
     ) as SupportedLanguage | null;
