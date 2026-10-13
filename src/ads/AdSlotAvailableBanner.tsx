@@ -10,6 +10,18 @@ import { getAdFallbackCopy } from "./adFallbackCopy";
 const ROTATE_INTERVAL_MS = 2800;
 const EXIT_DURATION_MS = 500;
 
+// Los precios están en ARS. Mostrar los tiles de dígitos sin aclarar
+// moneda hace que alguien pensando en dólares los lea como un precio
+// carísimo en vez de casi simbólico — se agrega la bandera y el
+// equivalente aproximado en USD. Cotización oficial fijada a mano (no hay
+// API de cambio conectada); actualizar cada tanto, no hace falta que sea
+// exacta al centavo.
+const USD_RATE_ARS = 1535; // oficial, 2026-10-13
+function formatUsdEquivalent(priceArs: number): string {
+  const usd = priceArs / USD_RATE_ARS;
+  return `≈US$${usd.toFixed(2)}`;
+}
+
 // El ?lang= precarga el idioma objetivo de la campaña en el alta del
 // anunciante (ver Login.tsx/Dashboard.tsx en boludeando-ads).
 function signupUrl(locale: string | undefined): string {
@@ -153,30 +165,38 @@ export default function AdSlotAvailableBanner({
         </Box>
 
         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-            <Box sx={{ display: "flex", gap: "3px" }}>
-              {priceTiles.map((ch, i) => (
-                <Box
-                  key={i}
-                  sx={{
-                    display: "grid",
-                    placeItems: "center",
-                    width: 22,
-                    height: 30,
-                    backgroundColor: accentColor,
-                    color: "#fff",
-                    borderRadius: "6px",
-                    fontWeight: 900,
-                    fontSize: 17,
-                    boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
-                  }}
-                >
-                  {ch}
-                </Box>
-              ))}
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 0.25 }}>
+            <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+              <Box component="span" sx={{ fontSize: 16 }}>
+                🇦🇷
+              </Box>
+              <Box sx={{ display: "flex", gap: "3px" }}>
+                {priceTiles.map((ch, i) => (
+                  <Box
+                    key={i}
+                    sx={{
+                      display: "grid",
+                      placeItems: "center",
+                      width: 22,
+                      height: 30,
+                      backgroundColor: accentColor,
+                      color: "#fff",
+                      borderRadius: "6px",
+                      fontWeight: 900,
+                      fontSize: 17,
+                      boxShadow: "inset 0 -3px 0 rgba(0,0,0,0.18)",
+                    }}
+                  >
+                    {ch}
+                  </Box>
+                ))}
+              </Box>
+              <Box component="span" sx={{ fontSize: 12, fontWeight: 800, color: accentColor }}>
+                {copy.perWeek}
+              </Box>
             </Box>
-            <Box component="span" sx={{ fontSize: 12, fontWeight: 800, color: accentColor }}>
-              {copy.perWeek}
+            <Box component="span" sx={{ fontSize: 10, fontWeight: 700, color: `${inkColor}80` }}>
+              {formatUsdEquivalent(weeklyPrice)}
             </Box>
           </Box>
 
@@ -284,7 +304,10 @@ export default function AdSlotAvailableBanner({
       </Box>
 
       <Box sx={{ flexShrink: 0, display: "flex", flexDirection: "column", alignItems: "center", gap: 0.5 }}>
-        <Box sx={{ display: "flex", gap: "2px" }}>
+        <Box sx={{ display: "flex", alignItems: "center", gap: "3px" }}>
+          <Box component="span" sx={{ fontSize: 12 }}>
+            🇦🇷
+          </Box>
           {priceTiles.map((ch, i) => (
             <Box
               key={i}
@@ -307,6 +330,9 @@ export default function AdSlotAvailableBanner({
         </Box>
         <Box component="span" sx={{ fontSize: 11, fontWeight: 800, color: accentColor }}>
           {copy.perWeek}
+        </Box>
+        <Box component="span" sx={{ fontSize: 9, fontWeight: 700, color: `${inkColor}80`, whiteSpace: "nowrap" }}>
+          {formatUsdEquivalent(weeklyPrice)}
         </Box>
       </Box>
 

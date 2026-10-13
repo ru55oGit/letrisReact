@@ -15,6 +15,18 @@ function signupUrl(locale: string | undefined): string {
   return locale ? `${base}?lang=${encodeURIComponent(locale)}` : base;
 }
 
+// Los precios están en ARS. Mostrar los tiles de dígitos sin aclarar
+// moneda hace que alguien pensando en dólares los lea como un precio
+// carísimo en vez de casi simbólico — se agrega la bandera y el
+// equivalente aproximado en USD. Cotización oficial fijada a mano (no hay
+// API de cambio conectada); actualizar cada tanto, no hace falta que sea
+// exacta al centavo.
+const USD_RATE_ARS = 1535; // oficial, 2026-10-13
+function formatUsdEquivalent(priceArs: number): string {
+  const usd = priceArs / USD_RATE_ARS;
+  return `≈US$${usd.toFixed(2)}`;
+}
+
 interface RewardedFallbackCreativeProps {
   // 3500 = tier "rewarded" (ver adFormats.ts) — es el único formato que
   // compite por este slot, así que no hace falta parametrizarlo desde
@@ -57,7 +69,10 @@ export default function RewardedFallbackCreative({ weeklyPrice = 3500, locale }:
         {copy.kicker}
       </Box>
 
-      <Box sx={{ display: "flex", gap: "2px" }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: "4px" }}>
+        <Box component="span" sx={{ fontSize: 14 }}>
+          🇦🇷
+        </Box>
         {priceTiles.map((ch, i) => (
           <Box
             key={i}
@@ -80,6 +95,9 @@ export default function RewardedFallbackCreative({ weeklyPrice = 3500, locale }:
       </Box>
       <Box component="span" sx={{ fontSize: 12, fontWeight: 800, color: accentColor }}>
         {copy.perWeek}
+      </Box>
+      <Box component="span" sx={{ fontSize: 10, fontWeight: 700, color: `${inkColor}80` }}>
+        {formatUsdEquivalent(weeklyPrice)}
       </Box>
 
       <Box sx={{ fontSize: 17, fontWeight: 900, color: inkColor, mt: 1 }}>{copy.uploadIn2Min}</Box>
