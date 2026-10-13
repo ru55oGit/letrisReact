@@ -55,6 +55,18 @@ function getCopy(locale: string | undefined): HubAdPromoCopy {
 
 const TIER_PRICES = [1000, 2000, 3500];
 
+// Los precios están en ARS. Mostrar "$1000/wk" sin aclarar moneda hace que
+// alguien pensando en dólares lo lea como USD (un precio carísimo) en vez
+// de ARS (casi simbólico a la cotización actual) — se agrega el
+// equivalente aproximado en USD al lado para que quede claro. Cotización
+// oficial fijada a mano (no hay API de cambio conectada); actualizar cada
+// tanto, no hace falta que sea exacta al centavo.
+const USD_RATE_ARS = 1535; // oficial, 2026-10-13
+function formatUsdEquivalent(priceArs: number): string {
+  const usd = priceArs / USD_RATE_ARS;
+  return `≈US$${usd.toFixed(2)}`;
+}
+
 // Dominios reales de los 8 juegos (mismo listado que GAMES en
 // boludeando-ads/src/pages/CampaignDetail.tsx — emojinalo es el único caso
 // donde el slug interno difiere del dominio en vivo, emojionado.com).
@@ -245,10 +257,13 @@ export default function HubAdPromoBanner({ locale, accentColor = "#e74c3c", inkC
                 {label}
               </Box>
               <Box component="span" sx={{ display: "block", fontSize: 15, fontWeight: 900, color: accentColor, whiteSpace: "nowrap" }}>
-                ${TIER_PRICES[i]}
+                🇦🇷${TIER_PRICES[i]}
                 <Box component="span" sx={{ fontSize: 10, fontWeight: 800 }}>
                   {copy.perWeek}
                 </Box>
+              </Box>
+              <Box component="span" sx={{ display: "block", fontSize: 10, fontWeight: 700, color: `${inkColor}80`, whiteSpace: "nowrap" }}>
+                {formatUsdEquivalent(TIER_PRICES[i])}
               </Box>
             </Box>
           ))}
