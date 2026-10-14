@@ -1,6 +1,6 @@
 import esWords from "an-array-of-spanish-words";
 import enWords from "an-array-of-english-words";
-import ptWords from "an-array-of-portuguese-words";
+import { PT_WORDS_FILTERED } from "./ptWordsFiltered";
 import { EXTRA_NAMES_ES } from "./extraNames";
 import { EXTRA_WORDS_ES, EXTRA_WORDS_EN } from "./extraWords";
 import { SupportedLanguage } from "../i18n/translations";
@@ -30,7 +30,7 @@ function buildWordSet(rawWords: string[]): Set<string> {
 const WORD_SETS: Record<SupportedLanguage, Set<string>> = {
   es: buildWordSet([...(esWords as unknown as string[]), ...EXTRA_NAMES_ES, ...EXTRA_WORDS_ES]),
   en: buildWordSet([...(enWords as unknown as string[]), ...EXTRA_WORDS_EN]),
-  pt: buildWordSet(ptWords as unknown as string[]),
+  pt: buildWordSet(PT_WORDS_FILTERED),
 };
 
 export function isValidWord(word: string, lang: SupportedLanguage): boolean {
