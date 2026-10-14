@@ -10,7 +10,7 @@ import type { AdCreative } from "./types";
 // el mismo tick sin que medie ninguna visualización real. Igual que el
 // resto de los timers de este proyecto, no es anti-fraude robusto, es
 // proporcional al tamaño del proyecto.
-const MIN_VIEW_SECONDS = 4;
+const MIN_VIEW_SECONDS = 10;
 
 export function useRewardedAd(
   slot: string,
