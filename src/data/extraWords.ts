@@ -90,4 +90,10 @@ export const EXTRA_WORDS_EN: string[] = [
   "porto","genoa","turin","lyon","marseille","nice","geneva","zurich","manchester","liverpool","miami",
   "houston","boston","seattle","dallas","atlanta","philadelphia","detroit","phoenix","birmingham",
   "glasgow","belfast","sydney","melbourne","brisbane","auckland","guangzhou","shenzhen",
+  // Faltaban en esta copia recortada respecto a la lista original de
+  // Enganchalo (2026-10-14): comoros/kyrgyzstan/netherlands (países) y
+  // belmopan/bissau/yamoussoukro/ngerulmud/asuncion/lima/bloemfontein
+  // (capitales).
+  "comoros","kyrgyzstan","netherlands","belmopan","bissau","yamoussoukro","ngerulmud","asuncion",
+  "lima","bloemfontein",
 ];
