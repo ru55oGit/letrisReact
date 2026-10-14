@@ -38,7 +38,7 @@ interface RewardedFallbackCreativeProps {
 
 export default function RewardedFallbackCreative({ weeklyPrice = 3500, locale }: RewardedFallbackCreativeProps) {
   const copy = getAdFallbackCopy(locale);
-  const priceTiles = String(weeklyPrice).split("");
+  const priceTiles = ["$", ...String(weeklyPrice).split("")];
   const accentColor = "#e74c3c";
   const inkColor = "#3a1512";
   const paper = "#fff8f3";

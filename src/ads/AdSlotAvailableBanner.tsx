@@ -83,7 +83,7 @@ export default function AdSlotAvailableBanner({
   inkColor = "#3a1512",
 }: AdSlotAvailableBannerProps) {
   const copy = getAdFallbackCopy(locale);
-  const priceTiles = String(weeklyPrice).split("");
+  const priceTiles = ["$", ...String(weeklyPrice).split("")];
   const { index, exitingIndex } = useRotatingLine(copy.rotatingLines.length);
   const paper = "#fff8f3";
   const ariaLabel = copy.ariaLabel(weeklyPrice);
