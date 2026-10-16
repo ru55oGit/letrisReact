@@ -13,6 +13,7 @@ import LetrisBoard from "../components/LetrisBoard";
 import FoundWordsList, { FoundWordEntry } from "../components/FoundWordsList";
 import HowToPlayCollapse from "../components/HowToPlayCollapse";
 import { useLanguage } from "../i18n/LanguageContext";
+import { track } from "../lib/analytics";
 import { recordLastPlayed } from "../utils/lastPlayedState";
 import {
   Board,
@@ -74,9 +75,13 @@ export default function Game() {
   const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const levelUpTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedRecordRef = useRef(false);
+  // Marca de tiempo de la partida actual (se renueva en cada restart), para
+  // calcular duration_sec al llegar a game_over.
+  const gameStartedAtRef = useRef(Date.now());
 
   useEffect(() => {
     recordLastPlayed();
+    track("game_start", { level: 1 });
   }, []);
 
   const level = levelFromWordsFound(foundWords.length);
@@ -110,8 +115,12 @@ export default function Game() {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
       maybeSaveRecord(currentLanguage, score, foundWords.map((f) => f.word));
+      // "stack_overflow" es la única causa real de game over acá: una
+      // pieza nueva no entra porque el tablero llegó al tope.
+      const durationSec = Math.round((Date.now() - gameStartedAtRef.current) / 1000);
+      track("game_over", { level, score, duration_sec: durationSec, reason: "stack_overflow" });
     }
-  }, [gameState.phase, currentLanguage, score, foundWords.length]);
+  }, [gameState.phase, currentLanguage, score, foundWords.length, level]);
 
   function scheduleFeedbackClear() {
     if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
@@ -180,6 +189,7 @@ export default function Game() {
       setFlash(null);
 
       if (willLevelUp) {
+        track("level_start", { level: newLevel });
         setLevelUpNumber(newLevel);
         setGameState((prev) => ({ ...prev, phase: "levelup" }));
         if (levelUpTimeoutRef.current) clearTimeout(levelUpTimeoutRef.current);
@@ -229,6 +239,8 @@ export default function Game() {
     setErrorMsg("");
     setLevelUpNumber(null);
     setGameState({ board: createEmptyBoard(), fallingPiece: spawnPiece(currentLanguage), phase: "playing" });
+    gameStartedAtRef.current = Date.now();
+    track("game_start", { level: 1 });
   }
 
   if (gameState.phase === "gameover") {

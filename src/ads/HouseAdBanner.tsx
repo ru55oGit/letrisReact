@@ -1,9 +1,12 @@
 // Copiado de boludeando-ads/sdk/boludeando-ads-client/src/HouseAdBanner.tsx el 2026-10-09.
+// track() de analytics.ts agregado localmente (2026-10-16) — no está en la
+// fuente del SDK todavía, portar si se vuelve a copiar desde ahí.
 import { useEffect, useRef, useState } from "react";
 import Box from "@mui/material/Box";
 import { fetchNextAd, reportImpression, reportClick } from "./adClient";
 import { getAdSessionId } from "./adSessionId";
 import AdSlotAvailableBanner from "./AdSlotAvailableBanner";
+import { track } from "../lib/analytics";
 import type { AdCreative } from "./types";
 
 interface HouseAdBannerProps {
@@ -55,6 +58,9 @@ export default function HouseAdBanner({ slot, gameSlug, locale, format = "banner
       if (cancelled) return;
       if (result) {
         setAd(result);
+        // creative_id en vez de campaign_id: es el identificador real que
+        // trae AdCreative (ver types.ts) — no hay campaignId en la API hoy.
+        track("ad_impression", { ad_slot: slot, creative_id: result.creativeId });
         reportImpression(result, gameSlug, sessionId, locale).then((id) => {
           if (!cancelled) impressionIdRef.current = id;
         });
@@ -85,7 +91,10 @@ export default function HouseAdBanner({ slot, gameSlug, locale, format = "banner
       href={ad.clickUrl}
       target="_blank"
       rel="noopener noreferrer"
-      onClick={() => reportClick(impressionIdRef.current)}
+      onClick={() => {
+        track("ad_click", { ad_slot: slot, creative_id: ad.creativeId });
+        reportClick(impressionIdRef.current);
+      }}
       sx={{
         display: "block",
         width: "100%",

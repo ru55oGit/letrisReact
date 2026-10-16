@@ -1,5 +1,8 @@
 // Copiado de boludeando-ads/sdk/boludeando-ads-client/src/ShareButtons.tsx el 2026-10-11.
+// track() de analytics.ts agregado localmente (2026-10-16) — no está en la
+// fuente del SDK todavía, portar si se vuelve a copiar desde ahí.
 import Box from "@mui/material/Box";
+import { track } from "../lib/analytics";
 
 // Solo WhatsApp y Facebook: son las dos redes con un link de "compartir"
 // real que abre con el texto/URL precargado. Instagram no tiene equivalente
@@ -50,6 +53,7 @@ export default function ShareButtons({ locale }: ShareButtonsProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Compartir por WhatsApp"
+          onClick={() => track("share", { method: "whatsapp" })}
           sx={{
             display: "grid",
             placeItems: "center",
@@ -73,6 +77,7 @@ export default function ShareButtons({ locale }: ShareButtonsProps) {
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Compartir por Facebook"
+          onClick={() => track("share", { method: "facebook" })}
           sx={{
             display: "grid",
             placeItems: "center",

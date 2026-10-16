@@ -1,8 +1,11 @@
 // Copiado de boludeando-ads/sdk/boludeando-ads-client/src/useRewardedAd.ts el 2026-10-08.
+// track() de analytics.ts agregado localmente (2026-10-16) — no está en la
+// fuente del SDK todavía, portar si se vuelve a copiar desde ahí.
 import { useCallback, useEffect, useRef, useState } from "react";
 import { fetchNextAd, reportImpression, reportReward, reportClick } from "./adClient";
 import { getAdSessionId } from "./adSessionId";
 import { getCooldownRemainingSeconds, setCooldown } from "./adFrequencyCap";
+import { track } from "../lib/analytics";
 import type { AdCreative } from "./types";
 
 // Tiempo mínimo mirando el creative antes de poder confirmar la
@@ -70,6 +73,7 @@ export function useRewardedAd(
       setRewardToken(token);
       setShowingAd(true);
       if (ad) {
+        track("ad_impression", { ad_slot: slot, creative_id: ad.creativeId });
         reportImpression(ad, gameSlug, sessionId, locale).then((id) => {
           impressionIdRef.current = id;
         });
@@ -109,8 +113,9 @@ export function useRewardedAd(
   // anunciante, como cualquier banner) — esto solo reporta la métrica, la
   // navegación la hace el <a href> en RewardedAdModal.
   const handleImageClick = useCallback(() => {
+    track("ad_click", { ad_slot: slot, creative_id: adCreative?.creativeId });
     reportClick(impressionIdRef.current);
-  }, []);
+  }, [slot, adCreative]);
 
   return {
     loadingAd,
