@@ -38,6 +38,7 @@ export interface Translation {
   levelReachedLabel: (level: number) => string;
   wordsListTitle: string;
   wordsListEmpty: string;
+  shareResultText: (level: number, score: number) => string;
   errorNotInDictionary: string;
   errorAlreadyUsed: (word: string) => string;
   gameOverTitle: string;
@@ -92,6 +93,7 @@ const es: Translation = {
   levelReachedLabel: (level) => `Nivel alcanzado: ${level}`,
   wordsListTitle: "Palabras encontradas",
   wordsListEmpty: "Formá una palabra en la grilla y seleccionala",
+  shareResultText: (level, score) => `¡Completé Letris! Llegué al nivel ${level} con ${score} puntos 🧩`,
   errorNotInDictionary: "Esa palabra no se encuentra en mi diccionario.",
   errorAlreadyUsed: (word) => `Ya usaste "${word}" (-1 punto).`,
   gameOverTitle: "¡Se llenó la grilla!",
@@ -146,6 +148,7 @@ const en: Translation = {
   levelReachedLabel: (level) => `Level reached: ${level}`,
   wordsListTitle: "Words found",
   wordsListEmpty: "Spell a word in the grid and select it",
+  shareResultText: (level, score) => `I played Letris! Reached level ${level} with ${score} points 🧩`,
   errorNotInDictionary: "That word isn't in my dictionary.",
   errorAlreadyUsed: (word) => `You already used "${word}" (-1 point).`,
   gameOverTitle: "The grid filled up!",
@@ -200,6 +203,7 @@ const pt: Translation = {
   levelReachedLabel: (level) => `Nível alcançado: ${level}`,
   wordsListTitle: "Palavras encontradas",
   wordsListEmpty: "Forme uma palavra na grade e selecione",
+  shareResultText: (level, score) => `Joguei Letris! Cheguei ao nível ${level} com ${score} pontos 🧩`,
   errorNotInDictionary: "Essa palavra não está no meu dicionário.",
   errorAlreadyUsed: (word) => `Você já usou "${word}" (-1 ponto).`,
   gameOverTitle: "A grade encheu!",

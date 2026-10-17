@@ -33,6 +33,7 @@ import {
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
 import { collapseColumns } from "../utils/letrisEngine";
 import { maybeSaveRecord } from "../utils/letrisRecordState";
+import { buildLetrisResultPngFile } from "../utils/shareImage";
 import { useRewardedAd } from "../ads/useRewardedAd";
 import RewardedAdModal from "../ads/RewardedAdModal";
 import HouseAdBanner from "../ads/HouseAdBanner";
@@ -70,6 +71,8 @@ export default function Game() {
   const [flash, setFlash] = useState<{ cells: GridCell[]; kind: "success" | "error" } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [levelUpNumber, setLevelUpNumber] = useState<number | null>(null);
+  const [sharingResult, setSharingResult] = useState(false);
+  const canShareResult = typeof navigator !== "undefined" && typeof navigator.share === "function";
 
   const feedbackTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const clearTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -153,6 +156,33 @@ export default function Game() {
       return rotated ? { ...prev, fallingPiece: rotated } : prev;
     });
   }
+
+  // Controles de teclado (solo compu): flechas izq/der mueven, abajo baja,
+  // arriba rota. preventDefault para que no scrollee la página.
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      switch (e.key) {
+        case "ArrowLeft":
+          e.preventDefault();
+          handleMove(-1);
+          break;
+        case "ArrowRight":
+          e.preventDefault();
+          handleMove(1);
+          break;
+        case "ArrowDown":
+          e.preventDefault();
+          handleSoftDrop();
+          break;
+        case "ArrowUp":
+          e.preventDefault();
+          handleRotate("cw");
+          break;
+      }
+    }
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   function handleSelectionEnd(cells: GridCell[]) {
     if (gameState.phase !== "playing" || cells.length < 3) return;
@@ -243,6 +273,29 @@ export default function Game() {
     track("game_start", { level: 1 });
   }
 
+  async function handleShareResult(method: "whatsapp" | "facebook") {
+    if (!canShareResult || sharingResult) return;
+    setSharingResult(true);
+    track("share", { method });
+    try {
+      const levelReached = levelFromWordsFound(foundWords.length);
+      const imageFile = await buildLetrisResultPngFile(foundWords, score, levelReached, "letris-resultado.png");
+      const shareUrl = "https://www.letris.net";
+      const shareData: ShareData = {
+        title: "Letris",
+        text: `${t.shareResultText(levelReached, score)}\n${shareUrl}`,
+      };
+      if (imageFile && (!navigator.canShare || navigator.canShare({ files: [imageFile] }))) {
+        shareData.files = [imageFile];
+      }
+      await navigator.share(shareData);
+    } catch {
+      // Canceló el panel de compartir sin elegir nada.
+    } finally {
+      setSharingResult(false);
+    }
+  }
+
   if (gameState.phase === "gameover") {
     const levelReached = levelFromWordsFound(foundWords.length);
     return (
@@ -257,10 +310,48 @@ export default function Game() {
           </Box>
 
           <Box sx={{ borderRadius: "16px", backgroundColor: "#fff", p: 2, boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+            <Typography sx={{ fontSize: 20, fontWeight: 900, color: ACCENT, textAlign: "center", mb: 1.5 }}>
+              www.letris.net
+            </Typography>
             <Typography sx={{ fontSize: 18, fontWeight: 800, color: "#222", mb: 1 }}>
               {t.levelReachedLabel(levelReached)}
             </Typography>
             <FoundWordsList title={t.wordsListTitle} emptyLabel={t.wordsListEmpty} words={foundWords} />
+
+            {canShareResult && (
+              <Box sx={{ display: "flex", justifyContent: "center", gap: 1.5, mt: 2 }}>
+                <Box
+                  component="button"
+                  onClick={() => handleShareResult("whatsapp")}
+                  disabled={sharingResult}
+                  aria-label="Compartir por WhatsApp"
+                  sx={{
+                    display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: "50%",
+                    backgroundColor: "#25D366", color: "#fff", border: "none", cursor: "pointer",
+                    opacity: sharingResult ? 0.6 : 1,
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width={24} height={24} fill="currentColor">
+                    <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.74.46 3.43 1.32 4.92L2 22l5.29-1.39a9.9 9.9 0 0 0 4.75 1.21h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2m0 1.67c2.2 0 4.26.86 5.82 2.42a8.18 8.18 0 0 1 2.41 5.82c0 4.54-3.7 8.24-8.24 8.24a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.14.82.84-3.06-.2-.31a8.17 8.17 0 0 1-1.25-4.36c0-4.54 3.7-8.24 8.25-8.24M8.53 7.33c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.09 0 1.23.9 2.42 1.02 2.58.12.17 1.75 2.67 4.3 3.74.6.26 1.07.41 1.44.52.6.19 1.15.17 1.58.1.48-.07 1.48-.6 1.69-1.19.21-.58.21-1.08.15-1.19-.06-.1-.23-.17-.48-.29-.25-.12-1.48-.73-1.71-.81-.23-.08-.4-.12-.56.13-.17.25-.65.81-.79.98-.15.17-.29.19-.54.06-.25-.12-1.04-.38-1.99-1.23-.73-.66-1.23-1.46-1.37-1.71-.15-.25-.02-.38.11-.5.11-.11.25-.29.37-.44.12-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.37-.78-1.87-.2-.49-.41-.42-.56-.43-.14-.01-.31-.01-.48-.01Z" />
+                  </svg>
+                </Box>
+                <Box
+                  component="button"
+                  onClick={() => handleShareResult("facebook")}
+                  disabled={sharingResult}
+                  aria-label="Compartir por Facebook"
+                  sx={{
+                    display: "grid", placeItems: "center", width: 48, height: 48, borderRadius: "50%",
+                    backgroundColor: "#1877F2", color: "#fff", border: "none", cursor: "pointer",
+                    opacity: sharingResult ? 0.6 : 1,
+                  }}
+                >
+                  <svg viewBox="0 0 24 24" width={24} height={24} fill="currentColor">
+                    <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95Z" />
+                  </svg>
+                </Box>
+              </Box>
+            )}
           </Box>
 
           <Button
