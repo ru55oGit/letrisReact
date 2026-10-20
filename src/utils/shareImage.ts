@@ -35,6 +35,8 @@ const BG_GRADIENT_TO = "#F44336";
 const COLOR_WHITE = "#ffffff";
 const COLOR_MUTED = "rgba(255, 255, 255, 0.65)";
 const COLOR_PENALTY = "rgba(255, 255, 255, 0.75)";
+const ACCENT = "#e74c3c";
+const CARD_LABEL_COLOR = "#888888";
 
 export async function buildLetrisResultPngFile(
   words: LetrisShareWord[],
@@ -81,7 +83,12 @@ export async function buildLetrisResultPngFile(
   if (currentRow.length > 0) rows.push(currentRow);
 
   const rowsHeight = Math.max(rows.length, 1) * (chipHeight + chipGapY);
-  const height = headerHeight + rowsHeight + padding + penaltyHeight;
+  // Card blanca detrás de la lista de palabras (label + chips), para que no
+  // se pierdan contra el degradé rojo de fondo.
+  const cardInset = 16;
+  const cardTop = headerHeight - 40;
+  const cardBottom = headerHeight + rowsHeight + 16;
+  const height = cardBottom + (repeatPenalty > 0 ? 44 : 20);
 
   canvas.width = width;
   canvas.height = height;
@@ -111,15 +118,20 @@ export async function buildLetrisResultPngFile(
   ctx.font = "bold 12px sans-serif";
   ctx.fillText(`PUNTOS (${score})`, width / 2, 130);
 
+  // Card blanca detrás de la lista.
+  ctx.fillStyle = COLOR_WHITE;
+  roundRectPath(ctx, cardInset, cardTop, width - cardInset * 2, cardBottom - cardTop, 16);
+  ctx.fill();
+
   // Etiqueta de la lista.
-  ctx.fillStyle = COLOR_MUTED;
+  ctx.fillStyle = CARD_LABEL_COLOR;
   ctx.font = "bold 12px sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
   ctx.fillText(`PALABRAS ENCONTRADAS (${words.length})`, padding, 176);
 
-  // Chips de palabras, en filas (claros sobre el fondo rojo, no el tinte
-  // rojo de antes que se perdía contra el degradé).
+  // Chips de palabras, en filas (mismo tinte rojo que la lista real en
+  // pantalla, ahora que tienen la card blanca atrás para destacar).
   ctx.font = "bold 14px monospace";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
@@ -127,15 +139,15 @@ export async function buildLetrisResultPngFile(
   for (const row of rows) {
     let x = padding;
     for (const chip of row) {
-      ctx.fillStyle = "rgba(255, 255, 255, 0.14)";
+      ctx.fillStyle = "rgba(231, 76, 60, 0.1)";
       roundRectPath(ctx, x, y, chip.width, chipHeight, 6);
       ctx.fill();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
+      ctx.strokeStyle = "rgba(231, 76, 60, 0.35)";
       ctx.lineWidth = 1;
       roundRectPath(ctx, x, y, chip.width, chipHeight, 6);
       ctx.stroke();
 
-      ctx.fillStyle = COLOR_WHITE;
+      ctx.fillStyle = ACCENT;
       ctx.fillText(chip.label, x + 12, y + chipHeight / 2 + 1);
 
       x += chip.width + chipGapX;
@@ -144,13 +156,13 @@ export async function buildLetrisResultPngFile(
   }
 
   // Penalización por palabras repetidas, centrada abajo de todo (solo si
-  // hubo alguna).
+  // hubo alguna), afuera de la card blanca.
   if (repeatPenalty > 0) {
     ctx.fillStyle = COLOR_PENALTY;
     ctx.font = "600 14px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`-${repeatPenalty} puntos por palabras repetidas`, width / 2, height - padding / 2 - 6);
+    ctx.fillText(`-${repeatPenalty} puntos por palabras repetidas`, width / 2, height - 16);
   }
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
