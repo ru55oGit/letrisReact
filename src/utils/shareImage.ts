@@ -28,12 +28,19 @@ function roundRectPath(
   ctx.closePath();
 }
 
-const ACCENT = "#e74c3c";
+// Mismo degradé que el fondo de toda la app (ver Layout/index.tsx), no un
+// color aparte inventado para esta imagen.
+const BG_GRADIENT_FROM = "#a34747";
+const BG_GRADIENT_TO = "#F44336";
+const COLOR_WHITE = "#ffffff";
+const COLOR_MUTED = "rgba(255, 255, 255, 0.65)";
+const COLOR_PENALTY = "rgba(255, 255, 255, 0.75)";
 
 export async function buildLetrisResultPngFile(
   words: LetrisShareWord[],
   score: number,
   level: number,
+  repeatPenalty: number,
   filename: string,
 ): Promise<File | null> {
   const width = 560;
@@ -41,7 +48,8 @@ export async function buildLetrisResultPngFile(
   const chipHeight = 34;
   const chipGapX = 8;
   const chipGapY = 8;
-  const headerHeight = 168;
+  const headerHeight = 196;
+  const penaltyHeight = repeatPenalty > 0 ? 40 : 0;
 
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -73,40 +81,45 @@ export async function buildLetrisResultPngFile(
   if (currentRow.length > 0) rows.push(currentRow);
 
   const rowsHeight = Math.max(rows.length, 1) * (chipHeight + chipGapY);
-  const height = headerHeight + rowsHeight + padding;
+  const height = headerHeight + rowsHeight + padding + penaltyHeight;
 
   canvas.width = width;
   canvas.height = height;
 
-  // Tarjeta blanca redondeada, igual que el resto del hub.
-  ctx.fillStyle = "#ffffff";
+  // Tarjeta: la imagen entera es la tarjeta (bordes redondeados + fondo en
+  // degradé de marca, reemplaza el blanco plano de antes).
+  const gradient = ctx.createLinearGradient(0, 0, width, height);
+  gradient.addColorStop(0, BG_GRADIENT_FROM);
+  gradient.addColorStop(1, BG_GRADIENT_TO);
+  ctx.fillStyle = gradient;
   roundRectPath(ctx, 0, 0, width, height, 28);
   ctx.fill();
 
-  // Título de marca.
-  ctx.fillStyle = ACCENT;
-  ctx.font = "bold 30px sans-serif";
+  // Título de marca, más grande.
+  ctx.fillStyle = COLOR_WHITE;
+  ctx.font = "bold 40px sans-serif";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText("www.letris.net", width / 2, 44);
+  ctx.fillText("www.letris.net", width / 2, 50);
 
-  // Nivel alcanzado + puntos.
-  ctx.fillStyle = "#222222";
+  // Nivel alcanzado + puntos, centrados.
+  ctx.fillStyle = COLOR_WHITE;
   ctx.font = "bold 22px sans-serif";
-  ctx.fillText(`Nivel alcanzado: ${level}`, width / 2, 86);
+  ctx.fillText(`Nivel alcanzado: ${level}`, width / 2, 98);
 
-  ctx.fillStyle = "#666666";
-  ctx.font = "600 16px sans-serif";
-  ctx.fillText(`${score} puntos`, width / 2, 116);
+  ctx.fillStyle = COLOR_MUTED;
+  ctx.font = "bold 12px sans-serif";
+  ctx.fillText(`PUNTOS (${score})`, width / 2, 130);
 
   // Etiqueta de la lista.
-  ctx.fillStyle = "#888888";
+  ctx.fillStyle = COLOR_MUTED;
   ctx.font = "bold 12px sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  ctx.fillText(`PALABRAS ENCONTRADAS (${words.length})`, padding, 148);
+  ctx.fillText(`PALABRAS ENCONTRADAS (${words.length})`, padding, 176);
 
-  // Chips de palabras, en filas (igual estética que FoundWordsList).
+  // Chips de palabras, en filas (claros sobre el fondo rojo, no el tinte
+  // rojo de antes que se perdía contra el degradé).
   ctx.font = "bold 14px monospace";
   ctx.textAlign = "left";
   ctx.textBaseline = "middle";
@@ -114,20 +127,30 @@ export async function buildLetrisResultPngFile(
   for (const row of rows) {
     let x = padding;
     for (const chip of row) {
-      ctx.fillStyle = "rgba(231, 76, 60, 0.1)";
+      ctx.fillStyle = "rgba(255, 255, 255, 0.14)";
       roundRectPath(ctx, x, y, chip.width, chipHeight, 6);
       ctx.fill();
-      ctx.strokeStyle = "rgba(231, 76, 60, 0.35)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.32)";
       ctx.lineWidth = 1;
       roundRectPath(ctx, x, y, chip.width, chipHeight, 6);
       ctx.stroke();
 
-      ctx.fillStyle = ACCENT;
+      ctx.fillStyle = COLOR_WHITE;
       ctx.fillText(chip.label, x + 12, y + chipHeight / 2 + 1);
 
       x += chip.width + chipGapX;
     }
     y += chipHeight + chipGapY;
+  }
+
+  // Penalización por palabras repetidas, centrada abajo de todo (solo si
+  // hubo alguna).
+  if (repeatPenalty > 0) {
+    ctx.fillStyle = COLOR_PENALTY;
+    ctx.font = "600 14px sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(`-${repeatPenalty} puntos por palabras repetidas`, width / 2, height - padding / 2 - 6);
   }
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));

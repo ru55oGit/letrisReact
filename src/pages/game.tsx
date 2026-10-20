@@ -71,6 +71,7 @@ export default function Game() {
   const [flash, setFlash] = useState<{ cells: GridCell[]; kind: "success" | "error" } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [levelUpNumber, setLevelUpNumber] = useState<number | null>(null);
+  const [repeatPenalty, setRepeatPenalty] = useState(0);
   const [sharingResult, setSharingResult] = useState(false);
   const canShareResult = typeof navigator !== "undefined" && typeof navigator.share === "function";
 
@@ -198,6 +199,7 @@ export default function Game() {
 
     if (result.status === "repeat") {
       setScore((s) => Math.max(0, s + result.points));
+      setRepeatPenalty((p) => p - result.points);
       setFlash({ cells, kind: "error" });
       setErrorMsg(t.errorAlreadyUsed(result.word));
       scheduleFeedbackClear();
@@ -265,6 +267,7 @@ export default function Game() {
     setScore(0);
     setFoundWords([]);
     setUsedWords(new Set());
+    setRepeatPenalty(0);
     setFlash(null);
     setErrorMsg("");
     setLevelUpNumber(null);
@@ -279,7 +282,7 @@ export default function Game() {
     track("share", { method });
     try {
       const levelReached = levelFromWordsFound(foundWords.length);
-      const imageFile = await buildLetrisResultPngFile(foundWords, score, levelReached, "letris-resultado.png");
+      const imageFile = await buildLetrisResultPngFile(foundWords, score, levelReached, repeatPenalty, "letris-resultado.png");
       const shareUrl = "https://www.letris.net";
       const shareData: ShareData = {
         title: "Letris",
@@ -424,8 +427,8 @@ export default function Game() {
           />
 
           {errorMsg && (
-            <Box sx={{ position: "absolute", top: 8, left: "50%", transform: "translateX(-50%)", zIndex: 2 }}>
-              <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.7)", px: 1.5, py: 0.5, borderRadius: 999, fontSize: 12, fontWeight: 700, textAlign: "center", whiteSpace: "nowrap" }}>
+            <Box sx={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center", zIndex: 2, px: 2 }}>
+              <Typography sx={{ color: "#fff", backgroundColor: "rgba(0,0,0,0.8)", px: 2, py: 1, borderRadius: 999, fontSize: 14, fontWeight: 700, textAlign: "center" }}>
                 {errorMsg}
               </Typography>
             </Box>
