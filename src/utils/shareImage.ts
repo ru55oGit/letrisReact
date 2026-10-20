@@ -105,14 +105,14 @@ export async function buildLetrisResultPngFile(
   canvas.width = width;
   canvas.height = height;
 
-  // Tarjeta: la imagen entera es la tarjeta (bordes redondeados + fondo en
-  // degradé de marca, reemplaza el blanco plano de antes).
+  // Fondo: degradé de marca a todo el ancho/alto, sin bordes redondeados —
+  // con border-radius, las esquinas fuera del redondeo quedan transparentes
+  // y muchos visores las muestran blancas.
   const gradient = ctx.createLinearGradient(0, 0, width, height);
   gradient.addColorStop(0, BG_GRADIENT_FROM);
   gradient.addColorStop(1, BG_GRADIENT_TO);
   ctx.fillStyle = gradient;
-  roundRectPath(ctx, 0, 0, width, height, 28);
-  ctx.fill();
+  ctx.fillRect(0, 0, width, height);
 
   // Título de marca, más grande.
   ctx.fillStyle = COLOR_WHITE;
