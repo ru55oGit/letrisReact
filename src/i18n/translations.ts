@@ -39,6 +39,7 @@ export interface Translation {
   wordsListTitle: string;
   wordsListEmpty: string;
   shareResultText: (level: number, score: number) => string;
+  shareRepeatPenaltyLabel: (points: number) => string;
   errorNotInDictionary: string;
   errorAlreadyUsed: (word: string) => string;
   gameOverTitle: string;
@@ -94,6 +95,7 @@ const es: Translation = {
   wordsListTitle: "Palabras encontradas",
   wordsListEmpty: "Formá una palabra en la grilla y seleccionala",
   shareResultText: (level, score) => `¡Completé Letris! Llegué al nivel ${level} con ${score} puntos 🧩`,
+  shareRepeatPenaltyLabel: (points) => `-${points} puntos por palabras repetidas`,
   errorNotInDictionary: "Esa palabra no se encuentra en mi diccionario.",
   errorAlreadyUsed: (word) => `Ya usaste "${word}" (-1 punto).`,
   gameOverTitle: "¡Se llenó la grilla!",
@@ -149,6 +151,7 @@ const en: Translation = {
   wordsListTitle: "Words found",
   wordsListEmpty: "Spell a word in the grid and select it",
   shareResultText: (level, score) => `I played Letris! Reached level ${level} with ${score} points 🧩`,
+  shareRepeatPenaltyLabel: (points) => `-${points} points for repeated words`,
   errorNotInDictionary: "That word isn't in my dictionary.",
   errorAlreadyUsed: (word) => `You already used "${word}" (-1 point).`,
   gameOverTitle: "The grid filled up!",
@@ -204,6 +207,7 @@ const pt: Translation = {
   wordsListTitle: "Palavras encontradas",
   wordsListEmpty: "Forme uma palavra na grade e selecione",
   shareResultText: (level, score) => `Joguei Letris! Cheguei ao nível ${level} com ${score} pontos 🧩`,
+  shareRepeatPenaltyLabel: (points) => `-${points} pontos por palavras repetidas`,
   errorNotInDictionary: "Essa palavra não está no meu dicionário.",
   errorAlreadyUsed: (word) => `Você já usou "${word}" (-1 ponto).`,
   gameOverTitle: "A grade encheu!",

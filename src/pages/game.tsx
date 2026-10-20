@@ -282,7 +282,16 @@ export default function Game() {
     track("share", { method });
     try {
       const levelReached = levelFromWordsFound(foundWords.length);
-      const imageFile = await buildLetrisResultPngFile(foundWords, score, levelReached, repeatPenalty, "letris-resultado.png");
+      const imageFile = await buildLetrisResultPngFile(
+        foundWords,
+        {
+          levelLabel: t.levelReachedLabel(levelReached),
+          pointsLabel: `${t.scoreLabel.toUpperCase()} (${score})`,
+          wordsSectionLabel: `${t.wordsListTitle.toUpperCase()} (${foundWords.length})`,
+          repeatPenaltyLabel: repeatPenalty > 0 ? t.shareRepeatPenaltyLabel(repeatPenalty) : undefined,
+        },
+        "letris-resultado.png",
+      );
       const shareUrl = "https://www.letris.net";
       const shareData: ShareData = {
         title: "Letris",

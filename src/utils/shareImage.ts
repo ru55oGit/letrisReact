@@ -11,6 +11,15 @@ interface LetrisShareWord {
   points: number;
 }
 
+// Textos ya formateados/traducidos por el caller (t.levelReachedLabel,
+// etc.) — esta función no sabe de idiomas, solo dibuja.
+export interface LetrisShareLabels {
+  levelLabel: string; // ej "Nivel alcanzado: 4"
+  pointsLabel: string; // ej "PUNTOS (441)"
+  wordsSectionLabel: string; // ej "PALABRAS ENCONTRADAS (44)"
+  repeatPenaltyLabel?: string; // ej "-3 puntos por palabras repetidas"
+}
+
 function roundRectPath(
   ctx: CanvasRenderingContext2D,
   x: number,
@@ -40,9 +49,7 @@ const CARD_LABEL_COLOR = "#888888";
 
 export async function buildLetrisResultPngFile(
   words: LetrisShareWord[],
-  score: number,
-  level: number,
-  repeatPenalty: number,
+  labels: LetrisShareLabels,
   filename: string,
 ): Promise<File | null> {
   const width = 560;
@@ -51,7 +58,6 @@ export async function buildLetrisResultPngFile(
   const chipGapX = 8;
   const chipGapY = 8;
   const headerHeight = 196;
-  const penaltyHeight = repeatPenalty > 0 ? 40 : 0;
 
   const canvas = document.createElement("canvas");
   const ctx = canvas.getContext("2d");
@@ -88,7 +94,7 @@ export async function buildLetrisResultPngFile(
   const cardInset = 16;
   const cardTop = headerHeight - 40;
   const cardBottom = headerHeight + rowsHeight + 16;
-  const height = cardBottom + (repeatPenalty > 0 ? 44 : 20);
+  const height = cardBottom + (labels.repeatPenaltyLabel ? 44 : 20);
 
   canvas.width = width;
   canvas.height = height;
@@ -112,11 +118,11 @@ export async function buildLetrisResultPngFile(
   // Nivel alcanzado + puntos, centrados.
   ctx.fillStyle = COLOR_WHITE;
   ctx.font = "bold 22px sans-serif";
-  ctx.fillText(`Nivel alcanzado: ${level}`, width / 2, 98);
+  ctx.fillText(labels.levelLabel, width / 2, 98);
 
   ctx.fillStyle = COLOR_MUTED;
   ctx.font = "bold 12px sans-serif";
-  ctx.fillText(`PUNTOS (${score})`, width / 2, 130);
+  ctx.fillText(labels.pointsLabel, width / 2, 130);
 
   // Card blanca detrás de la lista.
   ctx.fillStyle = COLOR_WHITE;
@@ -128,7 +134,7 @@ export async function buildLetrisResultPngFile(
   ctx.font = "bold 12px sans-serif";
   ctx.textAlign = "left";
   ctx.textBaseline = "alphabetic";
-  ctx.fillText(`PALABRAS ENCONTRADAS (${words.length})`, padding, 176);
+  ctx.fillText(labels.wordsSectionLabel, padding, 176);
 
   // Chips de palabras, en filas (mismo tinte rojo que la lista real en
   // pantalla, ahora que tienen la card blanca atrás para destacar).
@@ -157,12 +163,12 @@ export async function buildLetrisResultPngFile(
 
   // Penalización por palabras repetidas, centrada abajo de todo (solo si
   // hubo alguna), afuera de la card blanca.
-  if (repeatPenalty > 0) {
+  if (labels.repeatPenaltyLabel) {
     ctx.fillStyle = COLOR_PENALTY;
     ctx.font = "600 14px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText(`-${repeatPenalty} puntos por palabras repetidas`, width / 2, height - 16);
+    ctx.fillText(labels.repeatPenaltyLabel, width / 2, height - 16);
   }
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, "image/png"));
