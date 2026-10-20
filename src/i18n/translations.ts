@@ -40,6 +40,7 @@ export interface Translation {
   wordsListEmpty: string;
   shareResultText: (level: number, score: number) => string;
   shareRepeatPenaltyLabel: (points: number) => string;
+  shareRecordText: (score: number) => string;
   errorNotInDictionary: string;
   errorAlreadyUsed: (word: string) => string;
   gameOverTitle: string;
@@ -96,6 +97,7 @@ const es: Translation = {
   wordsListEmpty: "Formá una palabra en la grilla y seleccionala",
   shareResultText: (level, score) => `¡Completé Letris! Llegué al nivel ${level} con ${score} puntos 🧩`,
   shareRepeatPenaltyLabel: (points) => `-${points} puntos por palabras repetidas`,
+  shareRecordText: (score) => `¡Mi récord en Letris es de ${score} puntos! ¿Podés superarlo? 🧩`,
   errorNotInDictionary: "Esa palabra no se encuentra en mi diccionario.",
   errorAlreadyUsed: (word) => `Ya usaste "${word}" (-1 punto).`,
   gameOverTitle: "¡Se llenó la grilla!",
@@ -152,6 +154,7 @@ const en: Translation = {
   wordsListEmpty: "Spell a word in the grid and select it",
   shareResultText: (level, score) => `I played Letris! Reached level ${level} with ${score} points 🧩`,
   shareRepeatPenaltyLabel: (points) => `-${points} points for repeated words`,
+  shareRecordText: (score) => `My Letris record is ${score} points! Can you beat it? 🧩`,
   errorNotInDictionary: "That word isn't in my dictionary.",
   errorAlreadyUsed: (word) => `You already used "${word}" (-1 point).`,
   gameOverTitle: "The grid filled up!",
@@ -208,6 +211,7 @@ const pt: Translation = {
   wordsListEmpty: "Forme uma palavra na grade e selecione",
   shareResultText: (level, score) => `Joguei Letris! Cheguei ao nível ${level} com ${score} pontos 🧩`,
   shareRepeatPenaltyLabel: (points) => `-${points} pontos por palavras repetidas`,
+  shareRecordText: (score) => `Meu recorde no Letris é de ${score} pontos! Consegue superar? 🧩`,
   errorNotInDictionary: "Essa palavra não está no meu dicionário.",
   errorAlreadyUsed: (word) => `Você já usou "${word}" (-1 ponto).`,
   gameOverTitle: "A grade encheu!",
