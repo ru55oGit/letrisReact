@@ -93,8 +93,14 @@ export async function buildLetrisResultPngFile(
   // se pierdan contra el degradé rojo de fondo.
   const cardInset = 16;
   const cardTop = headerHeight - 40;
-  const cardBottom = headerHeight + rowsHeight + 16;
-  const height = cardBottom + (labels.repeatPenaltyLabel ? 44 : 20);
+  const cardBottomNatural = headerHeight + rowsHeight + 16;
+  const bottomReserve = labels.repeatPenaltyLabel ? 44 : 20;
+  const naturalHeight = cardBottomNatural + bottomReserve;
+  // Con pocas palabras, altura mínima = ancho (queda cuadrada). Con muchas,
+  // se estira hacia abajo lo que haga falta — la card crece para absorber
+  // ese espacio extra, no queda un hueco de degradé abajo de una card chica.
+  const height = Math.max(width, naturalHeight);
+  const cardBottom = height - bottomReserve;
 
   canvas.width = width;
   canvas.height = height;
