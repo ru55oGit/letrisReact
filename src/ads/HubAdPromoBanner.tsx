@@ -221,6 +221,9 @@ export default function HubAdPromoBanner({ locale, accentColor = "#e74c3c", inkC
           lineHeight: "26px",
           fontWeight: 900,
           letterSpacing: "-0.01em",
+          // Le deja el hueco al emoji flotante de la esquina (ver más abajo)
+          // para que el título nunca envuelva debajo de él.
+          pr: "34px",
         }}
       >
         {copy.headline}
@@ -249,7 +252,7 @@ export default function HubAdPromoBanner({ locale, accentColor = "#e74c3c", inkC
         })}
       </Box>
 
-      <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 1 }}>
+      <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
         <Box sx={{ display: "flex", gap: 2.5 }}>
           {copy.tierLabels.map((label, i) => (
             <Box key={label}>
@@ -268,32 +271,33 @@ export default function HubAdPromoBanner({ locale, accentColor = "#e74c3c", inkC
             </Box>
           ))}
         </Box>
+      </Box>
 
-        <Box
-          sx={{
-            flexShrink: 0,
-            display: "grid",
-            placeItems: "center",
-            width: 48,
-            height: 48,
-            borderRadius: "50%",
-            backgroundColor: inkColor,
-            color: paper,
-          }}
-        >
-          <svg
-            viewBox="0 0 24 24"
-            width={22}
-            height={22}
-            fill="none"
-            stroke="currentColor"
-            strokeWidth={3}
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14M13 6l6 6-6 6" />
-          </svg>
-        </Box>
+      {/* Reemplaza el botón circular con flecha (línea de abajo, ahora
+          borrada): en mobile angosto ese círculo de 48px terminaba cortado
+          contra el borde derecho de la card la mayoría de las veces. Un
+          emoji flotante arriba a la derecha con un "tap" animado (baja,
+          pausa, sube — como un dedo presionando) no tiene ancho fijo que
+          desbordar y de paso deja más claro que toda la card es clickeable. */}
+      <Box
+        component="span"
+        aria-hidden="true"
+        sx={{
+          position: "absolute",
+          top: 12,
+          right: 16,
+          fontSize: 28,
+          lineHeight: 1,
+          animation: "hubPromoTap 1.6s ease-in-out infinite",
+          "@keyframes hubPromoTap": {
+            "0%, 100%": { transform: "translateY(0) scale(1)" },
+            "40%": { transform: "translateY(5px) scale(0.85)" },
+            "55%": { transform: "translateY(5px) scale(0.85)" },
+            "75%": { transform: "translateY(0) scale(1)" },
+          },
+        }}
+      >
+        👆
       </Box>
     </Box>
   );
