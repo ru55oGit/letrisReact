@@ -33,6 +33,10 @@ export default function Home() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { t, currentLanguage } = useLanguage();
+  // El idioma viaja hub→juego por query param al entrar; esto lo hace
+  // viajar también juego→hub al volver, para que no se pierda si el
+  // usuario lo cambió acá adentro.
+  const hubUrlWithLang = `${HUB_URL}&lang=${currentLanguage}`;
 
   const [adFree, setAdFree] = useState(false);
   const [buyingAdFree, setBuyingAdFree] = useState(false);
@@ -146,14 +150,14 @@ export default function Home() {
           boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
           width: { xs: "100%", md: "480px" }, position: "relative",
         }}>
-          <Box component="a" href={HUB_URL} onClick={handleHubLinkClick} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
+          <Box component="a" href={hubUrlWithLang} onClick={handleHubLinkClick} aria-label="Volver" sx={{ display: "flex", alignItems: "center", zIndex: 1 }}>
             <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
               <path d="M26 6L14 19L26 32" stroke={ACCENT} strokeWidth="4" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
           </Box>
           <Box
             component="a"
-            href={HUB_URL}
+            href={hubUrlWithLang}
             onClick={handleHubLinkClick}
             sx={{
               position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)",
