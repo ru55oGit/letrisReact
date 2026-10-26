@@ -85,6 +85,12 @@ export function track(eventName: AnalyticsEvent, params: EventParams = {}): void
   const payload: EventParams = { ...params, game_name: GAME_NAME };
   if (isInternalTraffic()) payload.traffic_type = "internal";
   if (isDebugMode()) payload.debug_mode = true;
+  // sendBeacon en vez de un fetch/XHR normal: varios de estos eventos
+  // (share/cross_game acá, select_game en el hub) se disparan en el mismo
+  // click que dispara una navegación a otro dominio — sin esto, el browser
+  // puede cortar el request a medio mandar al abandonar la página, y el
+  // evento nunca llega a GA4.
+  payload.transport_type = "beacon";
 
   try {
     window.gtag?.("event", eventName, payload);
