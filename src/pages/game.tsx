@@ -8,6 +8,8 @@ import ArrowForwardIosRoundedIcon from "@mui/icons-material/ArrowForwardIosRound
 import ArrowDownwardRoundedIcon from "@mui/icons-material/ArrowDownwardRounded";
 import RotateLeftRoundedIcon from "@mui/icons-material/RotateLeftRounded";
 import RotateRightRoundedIcon from "@mui/icons-material/RotateRightRounded";
+import PauseRoundedIcon from "@mui/icons-material/PauseRounded";
+import PlayArrowRoundedIcon from "@mui/icons-material/PlayArrowRounded";
 import Layout from "../components/Layout";
 import LetrisBoard from "../components/LetrisBoard";
 import FoundWordsList, { FoundWordEntry } from "../components/FoundWordsList";
@@ -43,7 +45,7 @@ const FEEDBACK_DURATION_MS = 1300;
 const CLEAR_DELAY_MS = 260;
 const LEVEL_UP_POPUP_MS = 1800;
 
-type Phase = "playing" | "levelup" | "gameover";
+type Phase = "playing" | "paused" | "levelup" | "gameover";
 
 interface GameState {
   board: Board;
@@ -125,6 +127,14 @@ export default function Game() {
       track("game_over", { level, score, duration_sec: durationSec, reason: "stack_overflow" });
     }
   }, [gameState.phase, currentLanguage, score, foundWords.length, level]);
+
+  function pauseGame() {
+    setGameState((prev) => (prev.phase === "playing" ? { ...prev, phase: "paused" } : prev));
+  }
+
+  function resumeGame() {
+    setGameState((prev) => (prev.phase === "paused" ? { ...prev, phase: "playing" } : prev));
+  }
 
   function scheduleFeedbackClear() {
     if (feedbackTimeoutRef.current) clearTimeout(feedbackTimeoutRef.current);
@@ -416,15 +426,32 @@ export default function Game() {
     <Layout onBack={() => navigate("/")}>
       <Box sx={{ width: "100%", px: { xs: 1.5, md: 2 }, pb: 2, display: "flex", flexDirection: "column" }}>
         <Box sx={{
-          display: "flex", alignItems: "center", justifyContent: "space-between",
+          display: "flex", alignItems: "center", gap: 1,
           backgroundColor: "rgba(0,0,0,0.18)", borderRadius: "16px", px: 2, py: 1.25, mb: 2,
         }}>
           <Typography sx={{ color: "#fff", fontWeight: 800, fontSize: 15 }}>
             {t.levelLabel} {level}
           </Typography>
-          <Typography sx={{ color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: 13 }}>
+          <Typography sx={{ color: "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: 13, ml: "auto" }}>
             {t.levelGoalLabel(wordsInLevel, levelGoal)}
           </Typography>
+          <Button
+            onClick={gameState.phase === "paused" ? resumeGame : pauseGame}
+            disabled={gameState.phase !== "playing" && gameState.phase !== "paused"}
+            aria-label={gameState.phase === "paused" ? t.resumeButtonLabel : t.pauseButtonLabel}
+            sx={{
+              minWidth: 0, width: 32, height: 32, flexShrink: 0,
+              backgroundColor: "rgba(255,255,255,0.15)", color: "#fff", borderRadius: "50%", p: 0,
+              "&:hover": { backgroundColor: "rgba(255,255,255,0.25)" },
+              "&.Mui-disabled": { backgroundColor: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.3)" },
+            }}
+          >
+            {gameState.phase === "paused" ? (
+              <PlayArrowRoundedIcon sx={{ fontSize: 18 }} />
+            ) : (
+              <PauseRoundedIcon sx={{ fontSize: 18 }} />
+            )}
+          </Button>
         </Box>
 
         <Box sx={{ position: "relative", borderRadius: "16px", overflow: "hidden", backgroundColor: "#fff", p: 1, mb: 1 }}>
@@ -452,6 +479,18 @@ export default function Game() {
               <Typography sx={{ fontSize: 44 }}>🎉</Typography>
               <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 32, color: ACCENT }}>
                 {t.levelUpTitle(levelUpNumber)}
+              </Typography>
+            </Box>
+          )}
+
+          {gameState.phase === "paused" && (
+            <Box sx={{
+              position: "absolute", inset: 0, zIndex: 2,
+              display: "flex", alignItems: "center", justifyContent: "center",
+              backgroundColor: "rgba(255,255,255,0.96)", textAlign: "center", px: 2,
+            }}>
+              <Typography sx={{ fontFamily: "Lobster, cursive", fontSize: 32, color: ACCENT }}>
+                {t.pausedOverlayTitle}
               </Typography>
             </Box>
           )}
