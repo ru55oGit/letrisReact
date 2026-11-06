@@ -35,6 +35,7 @@ import {
 import { evaluateSelection, columnsFromCells, GridCell } from "../utils/letrisWords";
 import { collapseColumns } from "../utils/letrisEngine";
 import { maybeSaveRecord } from "../utils/letrisRecordState";
+import { loadInProgressGame, saveInProgressGame, clearInProgressGame } from "../utils/letrisInProgressState";
 import { buildLetrisResultPngFile } from "../utils/shareImage";
 import { useRewardedAd } from "../ads/useRewardedAd";
 import RewardedAdModal from "../ads/RewardedAdModal";
@@ -63,17 +64,28 @@ export default function Game() {
   const navigate = useNavigate();
   const { t, currentLanguage } = useLanguage();
 
+  // Se lee una sola vez al montar (lazy initializer) — el resto del estado
+  // inicial se deriva de esto mismo, para que todos arranquen consistentes
+  // con la misma foto guardada (ver letrisInProgressState.ts).
+  const [initialSnapshot] = useState(() => loadInProgressGame());
+
   const [gameState, setGameState] = useState<GameState>(() => {
+    if (initialSnapshot) {
+      // Si había una partida guardada (jugando o ya en pausa), se restaura
+      // siempre en pausa — así la pieza no sigue cayendo sola apenas carga
+      // la página, y el jugador retoma cuando esté listo.
+      return { board: initialSnapshot.board, fallingPiece: initialSnapshot.fallingPiece, phase: "paused" };
+    }
     const board = createEmptyBoard();
     return { board, fallingPiece: spawnPiece(currentLanguage), phase: "playing" };
   });
-  const [score, setScore] = useState(0);
-  const [foundWords, setFoundWords] = useState<FoundWordEntry[]>([]);
-  const [usedWords, setUsedWords] = useState<Set<string>>(new Set());
+  const [score, setScore] = useState(initialSnapshot?.score ?? 0);
+  const [foundWords, setFoundWords] = useState<FoundWordEntry[]>(initialSnapshot?.foundWords ?? []);
+  const [usedWords, setUsedWords] = useState<Set<string>>(new Set(initialSnapshot?.usedWords ?? []));
   const [flash, setFlash] = useState<{ cells: GridCell[]; kind: "success" | "error" } | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [levelUpNumber, setLevelUpNumber] = useState<number | null>(null);
-  const [repeatPenalty, setRepeatPenalty] = useState(0);
+  const [repeatPenalty, setRepeatPenalty] = useState(initialSnapshot?.repeatPenalty ?? 0);
   const [sharingResult, setSharingResult] = useState(false);
   const canShareResult = typeof navigator !== "undefined" && typeof navigator.share === "function";
 
@@ -82,13 +94,36 @@ export default function Game() {
   const levelUpTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const savedRecordRef = useRef(false);
   // Marca de tiempo de la partida actual (se renueva en cada restart), para
-  // calcular duration_sec al llegar a game_over.
-  const gameStartedAtRef = useRef(Date.now());
+  // calcular duration_sec al llegar a game_over. Si venimos de una partida
+  // restaurada, se conserva la marca original en vez de reiniciarla.
+  const gameStartedAtRef = useRef(initialSnapshot?.gameStartedAt ?? Date.now());
 
   useEffect(() => {
     recordLastPlayed();
-    track("game_start", { level: 1 });
+    // Si veníamos de una partida restaurada, esto es un resume, no un
+    // arranque nuevo — no corresponde trackear game_start de nuevo.
+    if (!initialSnapshot) track("game_start", { level: 1 });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Guarda una foto de la partida en curso después de cada cambio relevante
+  // (ver letrisInProgressState.ts) — "levelup" no se persiste porque es un
+  // popup transitorio de 1.8s sobre "playing"; si el navegador mata la
+  // pestaña justo en ese instante, se retoma desde el último "playing"
+  // guardado un momento antes, que es indistinguible en la práctica.
+  useEffect(() => {
+    if (gameState.phase !== "playing" && gameState.phase !== "paused") return;
+    saveInProgressGame({
+      board: gameState.board,
+      fallingPiece: gameState.fallingPiece,
+      phase: gameState.phase,
+      score,
+      foundWords,
+      usedWords: Array.from(usedWords),
+      repeatPenalty,
+      gameStartedAt: gameStartedAtRef.current,
+    });
+  }, [gameState, score, foundWords, usedWords, repeatPenalty]);
 
   const level = levelFromWordsFound(foundWords.length);
   const wordsInLevel = wordsIntoCurrentLevel(foundWords.length);
@@ -120,6 +155,7 @@ export default function Game() {
   useEffect(() => {
     if (gameState.phase === "gameover" && !savedRecordRef.current) {
       savedRecordRef.current = true;
+      clearInProgressGame();
       maybeSaveRecord(currentLanguage, score, foundWords.map((f) => f.word));
       // "stack_overflow" es la única causa real de game over acá: una
       // pieza nueva no entra porque el tablero llegó al tope.
