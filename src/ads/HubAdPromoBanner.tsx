@@ -79,6 +79,7 @@ const GAME_URLS = [
   "tuttifrutalo.com",
   "imaginaloapp.com",
   "emojionado.com",
+  "encastralo.com",
 ];
 
 // Misma paleta de 5 colores del logo BOLUDEANDO (og-image.jpg), ciclando
